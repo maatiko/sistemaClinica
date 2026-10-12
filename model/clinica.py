@@ -4,7 +4,7 @@ class Clinica:
         self.__nome = nome
         self.__localizacao = localizacao
         self.__descricao = descricao
-        self.__horario_fucionamento : horario_funcionamento
+        self.__horario_fucionamento = horario_funcionamento
 
     @property
     def nome(self):
