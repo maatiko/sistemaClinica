@@ -24,3 +24,6 @@ class Profissional(Pessoa):
     def registro(self, novo_registro):
         if isinstance(novo_registro,str) and len(novo_registro) > 1:
             self.__registro = novo_registro
+
+    def verificar_tipo(self):
+        return "Profissional"
