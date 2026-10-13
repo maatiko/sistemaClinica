@@ -50,3 +50,30 @@ class ControladorPessoa:
             print("Nenhum profissional cadastrado.")
         else:
             return list(self.profissionais)
+
+    def alterar_dados_pessoa(self, cpf_atual, novo_nome, novo_cpf,
+                             novo_telefone, nova_data_nascimento):
+        if cpf_atual is None:
+            raise ValueError("Pessoa não informada.")
+
+        pessoa = next(
+            (p for p in self.pacientes + self.profissionais
+             if p.cpf == cpf_atual),
+            None
+        )
+
+        if pessoa is None:
+            raise ValueError("Pessoa não encontrada.")
+
+        if novo_cpf != cpf_atual and any(
+            p.cpf == novo_cpf
+            for p in self.pacientes + self.profissionais
+        ):
+            raise ValueError("Já existe uma pessoa com esse CPF.")
+
+        pessoa.nome = novo_nome
+        pessoa.cpf = novo_cpf
+        pessoa.telefone = novo_telefone
+        pessoa.data_nascimento = nova_data_nascimento
+
+        return True

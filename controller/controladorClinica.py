@@ -1,4 +1,4 @@
-from model import Clinica
+from model.clinica import Clinica
 class ControladorClinica:
     def __init__(self):
         self.__clinicas = []
@@ -27,3 +27,30 @@ class ControladorClinica:
             print("Nenhuma clínica cadastrada.")
         else:
             return list(self.__clinicas)
+
+    def alterar_dados_clinica(self, nome_atual, novo_nome, nova_localizacao,
+                              nova_descricao, novo_horario_abertura,
+                              novo_horario_fechamento):
+        if nome_atual is None:
+            raise ValueError("Clínica não informada.")
+
+        clinica = next(
+            (c for c in self.__clinicas if c.nome == nome_atual),
+            None
+        )
+
+        if clinica is None:
+            raise ValueError("Clínica não encontrada.")
+
+        if novo_nome != nome_atual and any(
+            c.nome == novo_nome for c in self.__clinicas
+        ):
+            raise ValueError("Já existe uma clínica com esse nome.")
+
+        clinica.nome = novo_nome
+        clinica.localizacao = nova_localizacao
+        clinica.descricao = nova_descricao
+        clinica.horario_abertura = novo_horario_abertura
+        clinica.horario_fechamento = novo_horario_fechamento
+
+        return True
