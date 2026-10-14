@@ -35,10 +35,19 @@ class Clinica:
             self.__descricao = nova_descricao
 
     @property
-    def horario_funcionamento(self):
-        return self.__registro
+    def horario_abertura(self):
+        return self.__horario_abertura
     
-    @horario_funcionamento.setter
-    def horario_funcionamento(self, novo_horario_funcionamento):
+    @horario_abertura.setter
+    def horario_abertura(self, novo_horario_funcionamento):
         if isinstance(novo_horario_funcionamento,str) and len(novo_horario_funcionamento) > 1:
-            self.__registro = novo_horario_funcionamento
+            self.__horario_abertura = novo_horario_funcionamento
+        
+    @property
+    def horario_fechamento(self):
+        return self.__horario_fechamento
+    
+    @horario_fechamento.setter
+    def horario_fechamento(self, novo_horario_fechamento):
+        if isinstance(novo_horario_fechamento,str) and len(novo_horario_fechamento) > 1:
+            self.__horario_fechamento = novo_horario_fechamento

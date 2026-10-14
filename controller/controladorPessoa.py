@@ -18,7 +18,7 @@ class ControladorPessoa:
         return True
 
     def remover_paciente(self, cpf):
-        if cpf is None:
+        if cpf is None :
             raise ValueError("Paciente não informado.")
 
         paciente = next(

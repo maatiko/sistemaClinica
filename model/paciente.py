@@ -1,5 +1,5 @@
 from model.abstractPessoa import Pessoa
-from datetime import date
+from datetime import date,datetime
 
 
 class Paciente(Pessoa):

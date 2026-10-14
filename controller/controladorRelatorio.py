@@ -1,6 +1,7 @@
 from collections import Counter
 
 class ControladorRelatorio:
+
     def __init__(self, controlador_clinica, controlador_consulta, controlador_pagamento):
         self.controlador_clinica = controlador_clinica
         self.controlador_consulta = controlador_consulta
