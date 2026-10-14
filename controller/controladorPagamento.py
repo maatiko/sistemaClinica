@@ -1,5 +1,6 @@
 from datetime import date, datetime
 
+
 class ControladorPagamento:
     def __init__(self):
         self.pagamentos_realizados = []

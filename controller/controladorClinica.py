@@ -23,10 +23,7 @@ class ControladorClinica:
         self.__clinicas.remove(nome_clinica)
 
     def listar_clinicas(self):
-        if not self.__clinicas:
-            print("Nenhuma clínica cadastrada.")
-        else:
-            return list(self.__clinicas)
+        return self.__clinicas
 
     def alterar_dados_clinica(self, nome_atual, novo_nome, nova_localizacao,
                               nova_descricao, novo_horario_abertura,

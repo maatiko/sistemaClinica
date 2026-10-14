@@ -51,3 +51,6 @@ class Clinica:
     def horario_fechamento(self, novo_horario_fechamento):
         if isinstance(novo_horario_fechamento,str) and len(novo_horario_fechamento) > 1:
             self.__horario_fechamento = novo_horario_fechamento
+
+    def __str__(self):
+        return f"Clínica: {self.__nome} | Cidade: {self.__localizacao} | Descrição: {self.__descricao} | Abertura: {self.__horario_abertura} | Fechamento: {self.__horario_fechamento}"

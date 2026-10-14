@@ -1,4 +1,4 @@
-from abstractPessoa import Pessoa
+from model.abstractPessoa import Pessoa
 
 class Profissional(Pessoa):
 
@@ -7,6 +7,8 @@ class Profissional(Pessoa):
         self.__especialidade = especialidade
         self.__registro = registro
 
+
+    
     @property
     def especialidade(self):
         return self.__especialidade

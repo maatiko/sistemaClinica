@@ -55,21 +55,26 @@ class TelaSistema:
                 abertura = input("Horário de Abertura (HH:MM): ")
                 fechamento = input("Horário de Fechamento (HH:MM): ")
 
-                adicionar_clinica = self.__controlador_clinica.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
+                adicionar_clinica = self.__sistema.controlador_clinica.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
                 print(f"\n[Resultado]: {adicionar_clinica}")
 
             elif opcao == "2":
                 nome = input("Nome da Clínica para ser excluída: ")
-                excluir_clinica = self.__controlador_clinica.excluir_clinica(nome)
+                excluir_clinica = self.__sistema.controlador_clinica.excluir_clinica(nome)
                 print(f"Resultado: {excluir_clinica}")
 
             elif opcao == "3":
                 nome = input("Nome da Clínica para ser alterada: ")
-                alterar_clinica = self.__controlador_clinica.alterar_clinica(nome)
+                alterar_clinica = self.__sistema.controlador_clinica.alterar_clinica(nome)
                 print(f"Resultado: {alterar_clinica}")
 
             elif opcao == "4":
-                print(self.__controlador_clinica.listar_clinicas())
+                clinicas = self.__sistema.controlador_clinica.listar_clinicas()
+                if not clinicas:
+                    print("Não há clinicas cadastradas")
+                else:
+                    for indice,clinica in enumerate(clinicas):
+                        print(f"{indice + 1} {clinica}")
 
             elif opcao =="0":
                 print("Retornando ao menu principal...")
@@ -94,20 +99,20 @@ class TelaSistema:
                 telefone = input("Telefone do paciente: ")
                 data_nascimento = input("Data de Nascimento do Paciente: ")
 
-                adicionar_paciente = self.__controlador_pessoa.adicionar_clinica(nome, cpf,telefone,data_nascimento )
+                adicionar_paciente = self.__sistema.controlador_pessoa.adicionar_paciente(nome, cpf,telefone,data_nascimento )
                 print(f"\n[Resultado]: {adicionar_paciente}")
             elif opcao == "2":
 
                 nome = input("Nome do Paciente para ser excluída: ")
-                excluir_clinica = self.__controlador_pessoa.excluir_paciente(nome)
+                excluir_clinica = self.__sistema.controlador_pessoa.excluir_paciente(nome)
                 print(f"Resultado: {excluir_clinica}")
 
             elif opcao == "3":
                 nome = input("Nome da Clínica para ser alterada: ")
-                alterar_clinica = self.__controlador_pessoa.alterar_paciente(nome)
+                alterar_clinica = self.__sistema.controlador_pessoa.alterar_paciente(nome)
                 print(f"Resultado: {alterar_clinica}")
             elif opcao == "4":
-                print(self.__controlador_pessoa.listar_pacientes())
+                print(self.__sistema.controlador_pessoa.listar_pacientes())
             elif opcao =="0":
                 print("Retornando ao menu principal...")
                 break
@@ -132,21 +137,21 @@ class TelaSistema:
                 registro = input("Registro do Profissional: ")
                 especialidade = input("Especialidade do Profissional: ")
 
-                adicionar_prof = self.__controlador_pessoa.adicionar_profissional(nome, cpf, telefone, registro, especialidade)
+                adicionar_prof = self.__sistema.controlador_pessoa.adicionar_profissional(nome, cpf, telefone, registro, especialidade)
                 print(f"\n[Resultado]: {adicionar_prof}")
 
             elif opcao == "2":
                 nome = input("Registro do Profissional para ser excluída: ")
-                excluir_prof = self.__controlador_pessoa.excluir_profissional(registro)
+                excluir_prof = self.__sistema.controlador_pessoa.excluir_profissional(registro)
                 print(f"Resultado: {excluir_prof}")
 
             elif opcao == "3":
                 nome = input("Nome da Clínica para ser alterada: ")
-                alterar_prof = self.__controlador_pessoa.alterar_profissional(nome)
+                alterar_prof = self.__sistema.controlador_pessoa.alterar_profissional(nome)
                 print("Resultado")
     
             elif opcao == "4":
-                print(self.__controlador_pessoa.listar_profissionais())
+                print(self.__sistema.controlador_pessoa.listar_profissionais())
 
             elif opcao =="0":
                 print("Retornando ao menu principal...")
@@ -173,18 +178,18 @@ class TelaSistema:
                 abertura = input("Horário de Abertura (HH:MM): ")
                 fechamento = input("Horário de Fechamento (HH:MM): ")
 
-                adicionar_clinica = self.__controlador_clinica.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
+                adicionar_clinica = self.__sistema.controlador_consulta.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
                 print(f"\n[Resultado]: {adicionar_clinica}")
             elif opcao == "2":
                 nome = input("Nome da Clínica para ser excluída: ")
-                excluir_clinica = self.__controlador_clinica.excluir_clinica(nome)
+                excluir_clinica = self.__sistema.controlador_consulta.excluir_clinica(nome)
                 print(f"Resultado: {excluir_clinica}")
             elif opcao == "3":
                 nome = input("Nome da Clínica para ser alterada: ")
-                alterar_clinica = self.__controlador_clinica.alterar_clinica(nome)
+                alterar_clinica = self.__sistema.controlador_consulta.alterar_clinica(nome)
                 print("Resultado")
             elif opcao == "4":
-                print(self.__controlador_clinica.listar_clinicas())
+                print(self.__sistema.controlador_consulta.listar_clinicas())
             elif opcao =="0":
                 print("Retornando ao menu principal...")
                 break
