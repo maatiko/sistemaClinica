@@ -14,13 +14,18 @@ class ControladorClinica:
             return True
 
     def excluir_clinica(self, nome_clinica):
-        if nome_clinica is None:
+        if nome_clinica is None or nome_clinica.strip() == "":
             raise ValueError("Clínica não informada.")
-
-        if nome_clinica not in self.__clinicas:
+        
+        clinica_encontrada = None
+        for clinica in self.__clinicas:
+            if clinica.nome == nome_clinica:
+                clinica_encontrada = clinica
+        if clinica_encontrada is None:
             raise ValueError("Clínica não encontrada.")
-
-        self.__clinicas.remove(nome_clinica)
+            
+        self.__clinicas.remove(clinica_encontrada)
+        return True
 
     def listar_clinicas(self):
         return self.__clinicas
@@ -50,4 +55,14 @@ class ControladorClinica:
         clinica.horario_abertura = novo_horario_abertura
         clinica.horario_fechamento = novo_horario_fechamento
 
+        return True
+
+    def verificar_existencia(self, nome_clinica):
+        if nome_clinica is None or nome_clinica.strip() == "":
+            raise ValueError("Clínica não informada.")
+        
+        existe = any(c.nome == nome_clinica for c in self.__clinicas)
+        
+        if not existe:
+            raise ValueError("Clínica não encontrada.")
         return True

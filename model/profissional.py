@@ -6,8 +6,6 @@ class Profissional(Pessoa):
         super().__init__(nome, cpf, telefone)
         self.__especialidade = especialidade
         self.__registro = registro
-
-
     
     @property
     def especialidade(self):

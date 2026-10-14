@@ -64,10 +64,19 @@ class TelaSistema:
                 print(f"Resultado: {excluir_clinica}")
 
             elif opcao == "3":
-                nome = input("Nome da Clínica para ser alterada: ")
-                alterar_clinica = self.__sistema.controlador_clinica.alterar_clinica(nome)
-                print(f"Resultado: {alterar_clinica}")
-
+                nome_atual = input("Nome da Clínica para ser alterada: ").strip()
+                if self.__sistema.controlador_clinica.verificar_existencia(nome):
+                    print("Cliníca Encontrada! Digite os novos dados:")
+                    novo_nome = input("Digite o novo nome: ")
+                    nova_localizacao = input("Digite a nova localização/cidade: ")
+                    nova_descricao = input("Digite a nova descrição: ")
+                    novo_horario_abertura = input("Digite o novo horário de abertura: ")
+                    novo_horario_fechamento = input("Digite o novo horário de fechamento: ")
+                    self.__sistema.controlador_clinica.alterar_dados_clinica(nome_atual,novo_nome,nova_localizacao,nova_descricao,novo_horario_abertura,novo_horario_fechamento)
+                    print("Dados Alterados com Sucesso!")
+                else:
+                    #erro que não existe a clínica que está se procurando
+                    pass
             elif opcao == "4":
                 clinicas = self.__sistema.controlador_clinica.listar_clinicas()
                 if not clinicas:
