@@ -1,16 +1,6 @@
-from controller import controladorClinica
-from controller import controladorConsulta
-from controller import controladorPagamento
-from controller import controladorPessoa
-from controller import controladorRelatorio
-
 class TelaSistema:
-    def __init__(self,controlador_clinica,controlador_consulta,controlador_pagamento,controlador_pessoa,controlador_relatorio):
-        self.__controlador_clinica = controlador_clinica
-        self.__controlador_consulta = controlador_consulta
-        self.__controlador_pagamento = controlador_pagamento
-        self.__controlador_pessoa = controlador_pessoa
-        self.__controlador_relatorio = controlador_relatorio
+    def __init__(self,ControladorSistema):
+        self.__sistema = ControladorSistema
 
     def iniciar(self):
         while True:
@@ -27,7 +17,7 @@ class TelaSistema:
             print("0. Sair")
             print("="*40)
 
-            opcao = input("Selecione uma opção:")
+            opcao = input("Selecione uma opção:").strip()
 
             if opcao == "1":
                 self.menu_clinica()
