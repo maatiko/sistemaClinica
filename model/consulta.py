@@ -5,11 +5,11 @@ from datetime import date
 
 class Consulta:
 
-    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,data:str,horario:str,valor:float):
-        #mais tarde checar se está recebendo a classe ou não
+    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,tipo:str, data:str,horario:str,valor:float):
         self.__clinica = clinica
         self.__paciente = paciente
         self.__profissional = profissional
+        self.__tipo = tipo
         self.__data = data
         self.__horario = horario
         self.__valor_base = valor

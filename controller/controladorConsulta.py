@@ -12,7 +12,7 @@ class ControladorConsulta:
     def abrir_tela(self):
         self.__tela_consulta.menu_consulta()
 
-    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional, valor, data_str, horario_str):
+    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional,tipo, valor, data_str, horario_str):
         clinica = self.__sistema.buscar_clinica(nome_clinica)
         if not clinica:
             raise ValueError(f"Clínica '{nome_clinica}' não cadastrada.")
@@ -30,7 +30,7 @@ class ControladorConsulta:
         
         self.__verificar_expediente(clinica, horario_conv)
 
-        nova_consulta = Consulta(clinica, paciente, profissional, valor, data_conv, horario_conv)
+        nova_consulta = Consulta(clinica, paciente, profissional,tipo, data_conv, horario_conv, valor )
         self.__verificar_colisao(nova_consulta)
 
         self.__consultas.append(nova_consulta)
