@@ -14,6 +14,7 @@ class ControladorSistema():
         self.__controlador_pagamento = ControladorPagamento()
         self.__controlador_relatorio = ControladorRelatorio(self)
         self.__tela_sistema = TelaSistema(self)
+   
 
     def iniciar(self):
         self.__tela_sistema.iniciar()
@@ -47,3 +48,19 @@ class ControladorSistema():
 
     def obter_todas_consultas(self):
         return self.__controlador_consulta.listar_consultas()
+
+    @property
+    def controlador_clinica(self):
+        return self.__controlador_clinica
+
+    @property
+    def controlador_pessoa(self):
+        return self.__controlador_pessoa
+
+    @property
+    def controlador_consulta(self):
+        return self.__controlador_consulta
+
+    @property
+    def controlador_pagamento(self):
+        return self.__controlador_pagamento

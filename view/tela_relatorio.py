@@ -28,11 +28,11 @@ class TelaRelatorio:
         c_barata = dados.get("consulta_mais_barata")
 
         if not clinica_top and not c_cara and not c_barata:
-            print("\n❌ Nenhuma consulta registrada no sistema para gerar relatórios.")
+            print("\nNenhuma consulta registrada no sistema para gerar relatórios.")
             return
 
         print("\n==========================================")
-        print("      RELATÓRIO DE CONSULTAS E CLÍNICAS    ")
+        print("      RELATÓRIO DE CONSULTAS   ")
         print("==========================================")
 
         if clinica_top:
@@ -42,19 +42,19 @@ class TelaRelatorio:
                 else clinica_top['clinica']
             )
             qtd = clinica_top['quantidade_atendimentos']
-            print(f"🏥 Clínica Líder em Atendimentos: {nome_clinica} ({qtd} atendimento(s))")
+            print(f" Clínica Líder em Atendimentos: {nome_clinica} ({qtd} atendimento(s))")
 
         if c_cara:
             val_cara = c_cara.valor_total() if callable(getattr(c_cara, "valor_total", None)) else c_cara.valor_total
             data_f = c_cara.data.strftime("%d/%m/%Y")
-            print(f"💰 Consulta Mais Cara: R${val_cara:.2f} | Paciente: {c_cara.paciente.nome} | Data: {data_f}")
+            print(f" Consulta Mais Cara: R${val_cara:.2f} | Paciente: {c_cara.paciente.nome} | Data: {data_f}")
 
         if c_barata:
             val_barata = c_barata.valor_total() if callable(getattr(c_barata, "valor_total", None)) else c_barata.valor_total
             data_f = c_barata.data.strftime("%d/%m/%Y")
-            print(f"🏷️ Consulta Mais Barata: R${val_barata:.2f} | Paciente: {c_barata.paciente.nome} | Data: {data_f}")
+            print(f" Consulta Mais Barata: R${val_barata:.2f} | Paciente: {c_barata.paciente.nome} | Data: {data_f}")
 
-    def exibir_relatorio_procedimentos(self):
+def exibir_relatorio_procedimentos(self):
         dados = self.__controlador.gerar_relatorio_procedimento()
 
         p_popular = dados.get("procedimento_mais_popular")
@@ -62,7 +62,7 @@ class TelaRelatorio:
         p_barato = dados.get("procedimento_mais_barato")
 
         if not p_popular and not p_caro and not p_barato:
-            print("\n❌ Nenhum procedimento registrado em consultas para gerar relatórios.")
+            print("\n Nenhum procedimento registrado em consultas para gerar relatórios.")
             return
 
         print("\n==========================================")
@@ -70,4 +70,20 @@ class TelaRelatorio:
         print("==========================================")
 
         if p_popular:
-            print(f"🔥 Procedimento Mais Realizado: {p_popular['descricao']}")
+            print(f" Procedimento Mais Realizado: {p_popular['descricao']} ({p_popular['quantidade']} vez(es))")
+
+        if p_caro:
+            prof = (
+                f"Dr(a). {p_caro.profissional.nome}"
+                if hasattr(p_caro, 'profissional') and p_caro.profissional
+                else "N/I"
+            )
+            print(f" Procedimento Mais Caro: {p_caro.descricao} - R${p_caro.custo:.2f} (Médico: {prof})")
+
+        if p_barato:
+            prof = (
+                f"Dr(a). {p_barato.profissional.nome}"
+                if hasattr(p_barato, 'profissional') and p_barato.profissional
+                else "N/I"
+            )
+            print(f" Procedimento Mais Barato: {p_barato.descricao} - R${p_barato.custo:.2f} (Médico: {prof})")

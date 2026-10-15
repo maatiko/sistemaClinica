@@ -41,7 +41,7 @@ class ControladorConsulta:
     
     
     def adicionar_procedimento_na_consulta(self, cpf, data_str, horario_str, desc, custo, registro_prof):
-        prof = self.__sistema.buscar_profissional_por_registro(registro_prof)
+        prof = self.__sistema.buscar_profissional_registro(registro_prof)
         if not prof:
             raise ValueError("Profissional do procedimento não encontrado.")
             
@@ -93,7 +93,7 @@ class ControladorConsulta:
             raise ValueError(f"Procedimento '{desc_atual}' não encontrado nesta consulta.")
 
         if novo_registro_prof != procedimento_alvo.profissional.registro:
-            novo_profissional = self.__sistema.buscar_profissional_por_registro(novo_registro_prof)
+            novo_profissional = self.__sistema.buscar_profissional_registro(novo_registro_prof)
             if not novo_profissional:
                 raise ValueError("Novo profissional informado não encontrado no sistema.")
             procedimento_alvo.profissional = novo_profissional
@@ -112,13 +112,16 @@ class ControladorConsulta:
             
         return consulta.procedimentos
     
-    def verificar_colisao(self,nova_consulta):
+    def __verificar_colisao(self,nova_consulta):
         for consulta in self.__consultas:
             if (consulta.profissional == nova_consulta.profissional and 
                 consulta.data == nova_consulta.data and 
                 consulta.horario == nova_consulta.horario):
-                raise ValueError("Confluto de Horário")
-
+                raise ValueError("Conflito de Horário")
+            if (consulta.paciente == nova_consulta.paciente and 
+                consulta.data == nova_consulta.data and 
+                consulta.horario == nova_consulta.horario):
+                raise ValueError("O paciente já possui consulta agendada para este horário.")
     def excluir_consulta(self, cpf_paciente, data_str, horario_str):
         data_conv = self.__converter_data(data_str)
         horario_conv = self.__converter_horario(horario_str)
@@ -204,9 +207,6 @@ class ControladorConsulta:
         elif isinstance(data_consulta, datetime):
             data_consulta = data_consulta.date()
 
-        if data_consulta < date.today():
-            raise ValueError("A data da consulta não pode estar no passado.")
-        
         return data_consulta
 
     def __converter_horario(self, horario_str):

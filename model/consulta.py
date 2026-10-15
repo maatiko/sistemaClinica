@@ -14,7 +14,30 @@ class Consulta:
         self.__horario = horario
         self.__valor_base = valor
         self.__procedimentos=[]
+    @property
+    def paciente(self):
+        return self.__paciente
 
+    @property
+    def clinica(self):
+        return self.__clinica
+
+    @property
+    def profissional(self):
+        return self.__profissional
+
+    @property
+    def data(self):
+        return self.__data
+
+    @property
+    def horario(self):
+        return self.__horario
+
+    @property
+    def procedimentos(self):
+        return self.__procedimentos
+    
     @property
     def data(self):
         return self.__data
