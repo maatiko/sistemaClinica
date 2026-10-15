@@ -9,6 +9,7 @@ class ControladorConsulta:
         self.__consultas = []
         self.__tela_consulta= TelaConsulta(self)
         self.__sistema = controlador_sistema
+
     def abrir_tela(self):
         self.__tela_consulta.menu_consulta()
 
@@ -54,6 +55,62 @@ class ControladorConsulta:
         consulta.adicionar_procedimento(proc)
         return True
     
+    def excluir_procedimento_da_consulta(self, cpf_paciente, data_str, horario_str, descricao_procedimento):
+        data_conv = self.__converter_data(data_str)
+        hor_conv = self.__converter_horario(horario_str)
+        
+        consulta = self.__encontrar_consulta(cpf_paciente, data_conv, hor_conv)
+        if not consulta:
+            raise ValueError("Consulta não encontrada.")
+
+        procedimento_alvo = None
+        for procedimento in consulta.procedimentos:
+            if procedimento.descricao.strip().lower() == descricao_procedimento.strip().lower():
+                procedimento_alvo = procedimento
+                break
+                
+        if not procedimento_alvo:
+            raise ValueError(f"Procedimento '{descricao_procedimento}' não encontrado nesta consulta.")
+
+        consulta.remover_procedimento(procedimento_alvo)
+        return True
+
+    def alterar_procedimento_da_consulta(self, cpf, data_str, hor_str, desc_atual, nova_desc, novo_custo, novo_registro_prof):
+        data_conv = self.__converter_data(data_str)
+        hor_conv = self.__converter_horario(hor_str)
+        consulta = self.__encontrar_consulta(cpf, data_conv, hor_conv)
+        if not consulta:
+            raise ValueError("Consulta não encontrada.")
+
+        procedimento_alvo = None
+        for procedimento in consulta.procedimentos:
+            if procedimento.descricao.strip().lower() == desc_atual.strip().lower():
+                procedimento_alvo = procedimento
+                break
+                
+        if not procedimento_alvo:
+            raise ValueError(f"Procedimento '{desc_atual}' não encontrado nesta consulta.")
+
+        if novo_registro_prof != procedimento_alvo.profissional.registro:
+            novo_profissional = self.__sistema.buscar_profissional_por_registro(novo_registro_prof)
+            if not novo_profissional:
+                raise ValueError("Novo profissional informado não encontrado no sistema.")
+            procedimento_alvo.profissional = novo_profissional
+
+        procedimento_alvo.descricao = nova_desc
+        procedimento_alvo.custo = novo_custo
+        return True
+
+    def listar_procedimentos_da_consulta(self, cpf, data_str, horario_str):
+        data_conv = self.__converter_data(data_str)
+        hor_conv = self.__converter_horario(horario_str)
+        
+        consulta = self.__encontrar_consulta(cpf, data_conv, hor_conv)
+        if not consulta:
+            raise ValueError("Consulta não encontrada.")
+            
+        return consulta.procedimentos
+    
     def verificar_colisao(self,nova_consulta):
         for consulta in self.__consultas:
             if (consulta.profissional == nova_consulta.profissional and 
@@ -78,7 +135,19 @@ class ControladorConsulta:
         return True
 
 
-    def converter_data(self, data_consulta):
+    def __encontrar_consulta(self, cpf_paciente, data_convertida, horario_convertido):
+        if not cpf_paciente or not data_convertida or not horario_convertido:
+            return None
+
+        for consulta in self.__consultas:
+            if (consulta.paciente.cpf == cpf_paciente and 
+                consulta.data == data_convertida and 
+                consulta.horario == horario_convertido):
+                return consulta
+                
+        return None
+    
+    def __converter_data(self, data_consulta):
         if isinstance(data_consulta, str):
             try:
                 data_consulta = datetime.strptime(data_consulta, "%d/%m/%Y").date()
@@ -92,7 +161,7 @@ class ControladorConsulta:
         
         return data_consulta
 
-    def converter_horario(self, horario_str):
+    def __converter_horario(self, horario_str):
         if not horario_str:
             raise ValueError("Horário não informado.")
         
@@ -100,44 +169,7 @@ class ControladorConsulta:
             return datetime.strptime(horario_str, "%H:%M").time()
         except ValueError:
             raise ValueError("Formato de horário inválido. Use HH:MM (ex: 14:30).")
-        
-    def validar_consulta(self, consulta):
-        if consulta is None:
-            raise ValueError("Consulta não informada.")
 
-        if consulta.clinica is None:
-            raise ValueError("A consulta precisa de uma clínica.")
-
-        if consulta.paciente is None:
-            raise ValueError("A consulta precisa de um paciente.")
-
-        if consulta.profissional is None:
-            raise ValueError("A consulta precisa de um profissional.")
-
-        if not consulta.tipo:
-            raise ValueError("Informe o tipo de atendimento.")
-
-        if consulta.valor < 0:
-            raise ValueError("O valor não pode ser negativo.")
-
-        data_consulta = consulta.data 
-
-        if isinstance(data_consulta, str):
-            try:
-                data_consulta = datetime.strptime(data_consulta, "%d/%m/%Y").date()
-            except ValueError:
-                raise ValueError("data inválida. Use DD/MM/AAAA.")
-
-        if isinstance(data_consulta, datetime):
-            data_consulta = data_consulta.date()
-
-        if data_consulta < date.today():
-            raise ValueError("A data da consulta não pode estar no passado.")
-
-        if not consulta.paciente.verificar_idade(consulta.paciente.idade):
-            raise ValueError("O paciente precisa ter mais de 18 anos.")
-
-        return True
 
     def listar_consultas(self):
             return list(self.consultas)
