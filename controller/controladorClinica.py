@@ -79,3 +79,4 @@ class ControladorClinica:
         for clinica in self.__clinicas:
             if clinica.nome == nome_clinica:
                 return clinica
+        return None

@@ -30,29 +30,36 @@ class TelaPessoa:
                 print("3. Alterar Paciente")
                 print("4. Listar Pacientes")
                 print("0. Retornar ao menu")
-                opcao = input("Insira sua opção: ")
+                opcao = input("Insira sua opção: ").strip()
     
                 if opcao =="1":
-                    
-                    nome = input("Nome do Paciente: ")
-                    cpf = input("CPF do Paciente: ")
-                    telefone = input("Telefone do paciente: ")
-                    data_nascimento = input("Data de Nascimento do Paciente (DD/MM/AAAA): ")
-                    data_convertida = datetime.strptime(data_nascimento,"%d/%m/%Y").date()
-                    adicionar_paciente = self.__controlador.adicionar_paciente(nome, cpf,telefone,data_nascimento )
-                    print(f"\n[Resultado]: {adicionar_paciente}")
-                
+
+                    try:    
+                        nome = input("Nome do Paciente: ")
+                        cpf = input("CPF do Paciente: ")
+                        telefone = input("Telefone do paciente: ")
+                        data_nascimento = input("Data de Nascimento do Paciente (DD/MM/AAAA): ")
+                        data_convertida = datetime.strptime(data_nascimento,"%d/%m/%Y").date()
+                        adicionar_paciente = self.__controlador.adicionar_paciente(nome, cpf,telefone,data_nascimento )
+                        print(f"\nSucesso em adicionar o paciente!")
+
+                    except ValueError as e:
+                        print(f"\n ERRO: O valor digitado é inválido ou ocorreu um erro de negócio: {e}")
     
                 elif opcao == "2":
-    
-                    cpf_pac = input("CPF do Paciente para ser excluída: ")
-                    excluir_paciente = self.__controlador.remover_paciente(cpf_pac)
-                    print(f"Resultado: {excluir_paciente}")
+                    try:
+                        cpf_pac = input("CPF do Paciente para ser excluída: ")
+                        excluir_paciente = self.__controlador.remover_paciente(cpf_pac)
+                        print(f"Sucesso em excluir o paciente!")
+
+                    except ValueError as e:
+                        print(f"Erro: {e}")
     
                 elif opcao == "3":
-    
-                    cpf_atual = input("CPF do Paciente para ser alterado: ")
-                    if self.__controlador.verificar_existencia_paciente(cpf_atual):
+
+                    try:
+                        cpf_atual = input("CPF do Paciente para ser alterado: ")
+                        self.__controlador.verificar_existencia_paciente(cpf_atual)
                         print("CPF Encontrado! Vamos alterar o cadastro: ")
                         novo_nome = input("Nome do Paciente: ")
                         novo_cpf = input("CPF do Paciente: ")
@@ -60,18 +67,23 @@ class TelaPessoa:
                         nova_data_nascimento = input("Data de Nascimento do Paciente: ")     
                         data_convertida = datetime.strptime(nova_data_nascimento,"%d/%m/%Y").date()
     
-                        alterar_paciente = self.__controlador.alterar_dados_pessoa(cpf_atual,novo_nome, novo_cpf, novo_telefone,data_convertida)
-                    print(f"Resultado: {alterar_paciente}")
-                
+                        self.__controlador.alterar_dados_pessoa(cpf_atual,novo_nome, novo_cpf, novo_telefone,data_convertida)
+                        print(f"Sucesso em alterar o dados do paciente")
+                    except ValueError as e:
+                        print(f"Erro : {e}")
+
                 elif opcao == "4":
-                    pacientes = self.__controlador.mostrar_pacientes()
-                    if not pacientes:
-                        print("Não há pacientes cadastrados")
-                    else:
-                        print("\n--Lista Pacientes--")
-                        for indice,paciente in enumerate(pacientes):
-                            print(f"{indice + 1} {paciente}")
-        
+                    try:
+                        pacientes = self.__controlador.mostrar_pacientes()
+                        if not pacientes:
+                            print("Não há pacientes cadastrados")
+                        else:
+                            print("\n--Lista Pacientes--")
+                            for indice,paciente in enumerate(pacientes):
+                                print(f"{indice + 1} {paciente}")
+                    except ValueError as e:
+                        print(f"Erro: {e}")
+                
                 elif opcao =="0":
                     print("Retornando ao menu principal...")
                     break
@@ -91,44 +103,53 @@ class TelaPessoa:
                 opcao = input("Insira sua opção: ")
     
                 if opcao =="1":
+                    try:
+                        nome = input("Nome do Profissional: ")
+                        cpf = input("CPF do Profissional: ")
+                        telefone = input("Telefone do Profissional: ")
+                        registro = input("Registro do Profissional ")
+                        especialidade = input("Especialidade do Profissional: ")
+                        self.__controlador.adicionar_profissional(nome, cpf,telefone,registro,especialidade )
+                        print(f"\nResultado : Sucesso em adicionar o profissional")
+                    except ValueError as e:
+                        print(f"Erro : {e}")
                     
-                    nome = input("Nome do Profissional: ")
-                    cpf = input("CPF do Profissional: ")
-                    telefone = input("Telefone do Profissional: ")
-                    registro = input("Registro do Profissional ")
-                    especialidade = input("Especialidade do Profissional: ")
-                    adicionar_profissional = self.__controlador.adicionar_profissional(nome, cpf,telefone,registro,especialidade )
-                    print(f"\n[Resultado]: {adicionar_profissional}")
-                
                 elif opcao == "2":
-    
-                    cpf_prof = input("CPF do Profissional para ser excluída: ")
-                    excluir_prof = self.__controlador.remover_profissional(cpf_prof)
-                    print(f"Resultado: {excluir_prof}")
-    
+                    try:
+                        cpf_prof = input("CPF do Profissional para ser excluída: ")
+                        excluir_prof = self.__controlador.remover_profissional(cpf_prof)
+                        print(f"Resultado: Sucesso em Remover o Profissional")
+                    except ValueError as e:
+                        print(f"Erro: {e}")
+
                 elif opcao == "3":
-    
-                    cpf_atual = input("CPF do Profissional para ser alterado: ")
-                    if self.__controlador.verificar_existencia_profissional(cpf_atual):
-                        print("CPF Encontrado! Vamos alterar o cadastro: ")
-                        novo_nome = input("Nome do Profissional: ")
-                        novo_cpf = input("CPF do Profissional: ")
-                        novo_telefone = input("Telefone do Profissional: ")
-                        novo_registro = input("Registro do Profissional: ")  
-                        nova_especialidade = input("A especialidade do Profissional:")   
-    
-                        alterar_profissional = self.__controlador.alterar_dados_pessoa(cpf_atual,novo_nome, novo_cpf, novo_telefone,novo_registro,novo_telefone)
-                    print(f"Resultado: {alterar_profissional}")
+                    try:
+                        cpf_atual = input("CPF do Profissional para ser alterado: ")
+                        if self.__controlador.verificar_existencia_profissional(cpf_atual):
+                            print("CPF Encontrado! Vamos alterar o cadastro: ")
+                            novo_nome = input("Nome do Profissional: ")
+                            novo_cpf = input("CPF do Profissional: ")
+                            novo_telefone = input("Telefone do Profissional: ")
+                            novo_registro = input("Registro do Profissional: ")  
+                            nova_especialidade = input("A especialidade do Profissional:")   
+        
+                            self.__controlador.alterar_dados_pessoa(cpf_atual,novo_nome, novo_cpf, novo_telefone,nova_especialidade,novo_registro)
+                        print(f"Resultado: Sucesso em alterar os dados do profissional")
+                    except ValueError as e:
+                        print(f"Erro: {e}")
                 
                 elif opcao == "4":
-                    profissionais = self.__controlador.mostrar_profissionais()
-                    if not profissionais:
-                        print("Não há profissionais cadastrados")
-                    else:
-                        print("\n--Lista Profissionais--")
-                        for indice,prof in enumerate(profissionais):
-                            print(f"{indice + 1} {prof}")
-        
+                    try:
+                        profissionais = self.__controlador.mostrar_profissionais()
+                        if not profissionais:
+                            print("Não há profissionais cadastrados")
+                        else:
+                            print("\n--Lista Profissionais--")
+                            for indice,prof in enumerate(profissionais):
+                                print(f"{indice + 1} {prof}")
+                    except ValueError as e:
+                        print(f"Erro: {e}")
+
                 elif opcao =="0":
                     print("Retornando ao menu principal...")
                     break
