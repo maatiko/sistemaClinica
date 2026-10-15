@@ -1,5 +1,11 @@
+<<<<<<< Updated upstream
+from .pagamento import Pagamento
+from exception.excecoes import DadosPixInvalidos
+
+=======
 from model.pagamento import Pagamento
 from exception.excecoes import DadosPixInvalidos
+>>>>>>> Stashed changes
 
 class PagamentoPix(Pagamento):
     def __init__(

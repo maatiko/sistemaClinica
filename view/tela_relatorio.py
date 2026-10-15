@@ -31,9 +31,7 @@ class TelaRelatorio:
             print("\nNenhuma consulta registrada no sistema para gerar relatórios.")
             return
 
-        print("\n==========================================")
         print("      RELATÓRIO DE CONSULTAS   ")
-        print("==========================================")
 
         if clinica_top:
             nome_clinica = (
@@ -54,7 +52,7 @@ class TelaRelatorio:
             data_f = c_barata.data.strftime("%d/%m/%Y")
             print(f" Consulta Mais Barata: R${val_barata:.2f} | Paciente: {c_barata.paciente.nome} | Data: {data_f}")
 
-def exibir_relatorio_procedimentos(self):
+    def exibir_relatorio_procedimentos(self):
         dados = self.__controlador.gerar_relatorio_procedimento()
 
         p_popular = dados.get("procedimento_mais_popular")
@@ -65,9 +63,7 @@ def exibir_relatorio_procedimentos(self):
             print("\n Nenhum procedimento registrado em consultas para gerar relatórios.")
             return
 
-        print("\n==========================================")
         print("        RELATÓRIO DE PROCEDIMENTOS        ")
-        print("==========================================")
 
         if p_popular:
             print(f" Procedimento Mais Realizado: {p_popular['descricao']} ({p_popular['quantidade']} vez(es))")

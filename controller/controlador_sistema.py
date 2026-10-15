@@ -11,7 +11,7 @@ class ControladorSistema():
         self.__controlador_pessoa = ControladorPessoa()
         self.__controlador_clinica = ControladorClinica()
         self.__controlador_consulta = ControladorConsulta(self)
-        self.__controlador_pagamento = ControladorPagamento()
+        self.__controlador_pagamento = ControladorPagamento(self)
         self.__controlador_relatorio = ControladorRelatorio(self)
         self.__tela_sistema = TelaSistema(self)
    
@@ -27,7 +27,7 @@ class ControladorSistema():
         elif opcao == "3":
             self.__controlador_consulta.abrir_tela()
         elif opcao  == "4":
-            pass #menu de pagamento
+            self.__controlador_pagamento.abrir_tela()
         elif opcao =="5":
             self.__controlador_relatorio.abrir_tela()
         else:

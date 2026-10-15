@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
+from .pagamento import Pagamento
+=======
 from model.pagamento import Pagamento
+>>>>>>> Stashed changes
 from exception.excecoes import DadosCartaoInvalidos
 
 
