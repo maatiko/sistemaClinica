@@ -1,19 +1,60 @@
 from datetime import date, datetime
 from model.consulta import Consulta
+from model.procedimento import Procedimento
+from controller.controlador_sistema import ControladorSistema
+from view.tela_consulta import TelaConsulta
 
 class ControladorConsulta:
-    def __init__(self):
+    def __init__(self,controlador_sistema):
         self.__consultas = []
+        self.__tela_consulta= TelaConsulta(self)
+        self.__sistema = controlador_sistema
+    def abrir_tela(self):
+        self.__tela_consulta.menu_consulta()
 
-    def agendar_consulta(self, clinica,paciente,profissional,tipo,valor,data,horario):
+    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional, tipo, valor, data_str, horario_str):
+        clinica = self.__sistema.buscar_clinica_por_nome(nome_clinica)
+        if not clinica:
+            raise ValueError(f"Clínica '{nome_clinica}' não cadastrada.")
+
+        paciente = self.__sistema.buscar_paciente_por_cpf(cpf_paciente)
+        if not paciente:
+            raise ValueError(f"Paciente com CPF '{cpf_paciente}' não encontrado.")
+
+        profissional = self.__sistema.buscar_profissional_por_registro(registro_profissional)
+        if not profissional:
+            raise ValueError(f"Profissional (Registro: '{registro_profissional}') não encontrado.")
+
+        data_conv = self.__converter_data(data_str)
+        horario_conv = self.__converter_horario(horario_str)
         
-        self.validar_dados_consulta(clinica,paciente,profissional,tipo,valor,data,horario)
-        data_convertida = self.__converter_data(data)
-        nova_consulta = Consulta(clinica,paciente,profissional,tipo,valor,data,horario)
+        self.__verificar_expediente(clinica, horario_conv)
+
+        from model.consulta import Consulta
+        nova_consulta = Consulta(clinica, paciente, profissional, tipo, valor, data_conv, horario_conv)
         self.__verificar_colisao(nova_consulta)
-        
-        self.__consultas.append(nova_consulta)
 
+        self.__consultas.append(nova_consulta)
+        return True
+    
+    
+    def adicionar_procedimento_na_consulta(self, cpf, data_str, horario_str, desc, custo, registro_prof):
+        prof = self.__sistema.buscar_profissional_por_registro(registro_prof)
+        if not prof:
+            raise ValueError("Profissional do procedimento não encontrado.")
+            
+        data_conv = self.__converter_data(data_str)
+        hor_conv = self.__converter_horario(horario_str)
+        
+        consulta = self.__encontrar_consulta(cpf, data_conv, hor_conv)
+        if not consulta:
+            raise ValueError("Consulta não encontrada.")
+            
+        from model.procedimento import Procedimento
+        proc = Procedimento(desc, custo, prof)
+        consulta.adicionar_procedimento(proc)
+        return True
+    
     def verificar_colisao(self,nova_consulta):
         for consulta in self.__consultas:
             if (consulta.profissional == nova_consulta.profissional and 
@@ -158,3 +199,4 @@ class ControladorConsulta:
                 return True 
                 
         raise ValueError("Consulta não encontrada com esses dados.")
+    

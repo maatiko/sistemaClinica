@@ -25,4 +25,7 @@ class Procedimento:
     @property
     def profissional(self):
         return self.__profissional
+
+    def __str__(self):
+        return f"Procedimento: {self.__descricao} | Custo: R$ {self.__custo:.2f} | Profissional: {self.__profissional.nome}"
         

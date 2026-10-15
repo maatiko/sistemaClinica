@@ -1,12 +1,15 @@
-
 from model.paciente import Paciente
 from model.profissional import Profissional
-
+from view.tela_pessoa import TelaPessoa
 
 class ControladorPessoa:
     def __init__(self):
         self.__pacientes = []
         self.__profissionais = []
+        self.__tela_pessoa = TelaPessoa(self)
+
+    def abrir_tela(self):
+        self.__tela_pessoa.menu_principal_pessoa()
 
     def adicionar_paciente(self, nome, cpf, telefone, data_nascimento):
         if any(p.cpf == cpf for p in self.__pacientes + self.__profissionais):

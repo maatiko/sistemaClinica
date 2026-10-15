@@ -1,8 +1,13 @@
 from model.clinica import Clinica
+from view.tela_clinica import TelaClinica
 class ControladorClinica:
     def __init__(self):
         self.__clinicas = []
+        self.__tela_clinica - TelaClinica(self)
 
+    def abrir_tela(self):
+        self.__tela_clinica.menu_clinica()
+        
     def adicionar_clinica(self,nome,localizacao,descricao,horario_abertura,horario_fechamento):
         clinica_adicionada = Clinica(nome,localizacao,descricao,horario_abertura,horario_fechamento)
         if clinica_adicionada is None:

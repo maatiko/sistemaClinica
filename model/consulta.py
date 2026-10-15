@@ -5,15 +5,15 @@ from datetime import date
 
 class Consulta:
 
-    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,data:str,horario:str,tipo_atendimento:str,valor:float):
+    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,data:str,horario:str,valor:float):
         #mais tarde checar se está recebendo a classe ou não
         self.__clinica = clinica
         self.__paciente = paciente
         self.__profissional = profissional
         self.__data = data
         self.__horario = horario
-        self.__tipo_atendimento = tipo_atendimento
-        self.__valor = valor
+        self.__valor_base = valor
+        self.__procedimentos=[]
 
     @property
     def data(self):
@@ -34,19 +34,34 @@ class Consulta:
             self.__horario = novo_horario
 
     @property
-    def tipo_atendimento(self):
-        return self.__tipo_atendimento
+    def procedimentos(self):
+        return self.__procedimentos
     
-    @tipo_atendimento.setter
-    def tipo_atendimento(self, novo_tipo):
-        if isinstance(novo_tipo,str) and len(novo_tipo) > 1:
-            self.__tipo_atendimento = novo_tipo
+    @property
+    def valor_base(self):
+        return self.__valor_base
+    
+    @valor_base.setter
+    def valor_base(self, novo_valor):
+        if isinstance(novo_valor,str) and novo_valor > 0:
+            self.__valor_base = novo_valor
 
     @property
-    def valor(self):
-        return self.__valor
+    def valor_total(self):
+        custo_procedimentos = sum(p.custo for p in self.__procedimentos)
+        return self.__valor_base + custo_procedimentos
     
-    @valor.setter
-    def valor(self, novo_valor):
-        if isinstance(novo_valor,str) and novo_valor > 0:
-            self.__valor = novo_valor
+    def adicionar_procedimento(self,procedimento_novo):
+        if procedimento_novo is None:
+            raise ValueError("Procedimento inválido.")
+        self.__procedimentos.append(procedimento_novo)
+
+    def remover_procedimento(self,procedimento_remover):
+        if procedimento_remover in self.__procedimentos:
+            self.__procedimentos.remove(procedimento_remover)
+        else:
+            raise ValueError("O procedimento informado não está associado a esta consulta.")
+    def __str__(self):
+        return (f"Consulta dia {self.data} às {self.horario} | Paciente: {self.paciente.nome} | "
+                f"Valor Total: R$ {self.valor_total:.2f} "
+                f"({len(self.__procedimentos)} procedimentos adicionais)")
