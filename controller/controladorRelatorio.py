@@ -1,19 +1,20 @@
 from collections import Counter
-
+from view.tela_relatorio import TelaRelatorio
 class ControladorRelatorio:
+    def __init__(self, controlador_sistema):
+        self.__sistema = controlador_sistema
+        self.__tela_relatorio = TelaRelatorio(self)
 
-    def __init__(self, controlador_clinica, controlador_consulta, controlador_pagamento):
-        self.controlador_clinica = controlador_clinica
-        self.controlador_consulta = controlador_consulta
-        self.controlador_pagamento = controlador_pagamento
-
+    def abrir_tela(self):
+        self.__tela_relatorio.menu_relatorio()
+    
     def checar_clinica_maior_atendimento(self):
-        consultas = self.controlador_consulta.listar_consultas()
+        consultas = self.__sistema.obter_todas_consultas()
 
         if not consultas:
             return None
 
-        contagem = Counter(consulta.clinica for consulta in consultas)
+        contagem = Counter(consulta.clinica.nome for consulta in consultas)
 
         clinica, quntidade = contagem.most_common(1)[0]
 
@@ -23,42 +24,42 @@ class ControladorRelatorio:
         return {"clinica_com_mais_atendimentos": self.checar_clinica_maior_atendimento(), "consulta_mais_cara": self.checar_consulta_cara(), "consulta_mais_barata": self.checar_consulta_barata()} 
 
     def checar_consulta_cara(self):
-        consultas = self.controlador_consulta.listar_consultas()
+        consultas = self.__sistema.obter_todas_consultas()
 
         if not consultas:
             return None
 
-        return max(consultas, key=lambda consulta: consulta.valor)
+        return max(consultas, key=lambda consulta: consulta.valor_total)
 
     def checar_consulta_barata(self):
-        consultas = self.controlador_consulta.listar_consultas()
+        consultas = self.__sistema.obter_todas_consultas()
 
         if not consultas:
             return None
 
-        return min(consultas, key=lambda consulta: consulta.valor)
+        return min(consultas, key=lambda consulta: consulta.valor_total)
 
     def checar_procedimentos_popular(self):
-        consultas = self.controlador_consulta.listar_consultas()
+        consultas = self.__sistema.obter_todas_consultas()
         procedimentos = []
 
         for consulta in consultas:
-            procedimentos.extend(consulta.procedimentos_realizados)
+            procedimentos.extend(consulta.procedimentos)
 
         if not procedimentos:
             return None 
 
-        contagem = Counter(procedimento.descricao for procedimento in procedimentos)
+        contagem = Counter(procedimento.descricao.strip().title() for procedimento in procedimentos)
         descricao, quantidade = contagem.most_common(1)[0]
 
         return {"descricao": descricao, "quantidade": quantidade}
 
     def checar_procedimento_barato(self):
-        consultas = self.controlador_consulta.listar_consultas()
+        consultas = self.__sistema.obter_todas_consultas()
         procedimentos = []
 
         for consulta in consultas:
-            procedimentos.extend(consulta.procedimentos_realizados)
+            procedimentos.extend(consulta.procedimentos)
 
         if not procedimentos:
             return None
@@ -66,11 +67,11 @@ class ControladorRelatorio:
         return min(procedimentos, key=lambda procedimento: procedimento.custo)
 
     def checar_procedimento_caro(self):
-        consultas = self.controlador_consulta.listar_consultas()
+        consultas = self.__sistema.obter_todas_consultas()
         procedimentos = []
 
         for consulta in consultas:
-            procedimentos.extend(consulta.procedimentos_realizados)
+            procedimentos.extend(consulta.procedimentos)
 
         if not procedimentos:
             return None

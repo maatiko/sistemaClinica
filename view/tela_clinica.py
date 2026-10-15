@@ -35,7 +35,7 @@ class TelaClinica:
                     elif opcao == "3":
                         nome_atual = input("Nome da Clínica para ser alterada: ").strip()
                         try:
-                            print("Cliníca Encontrada! Digite os novos dados:").strip()
+                            print("Cliníca Encontrada! Digite os novos dados:")
                             novo_nome = input("Digite o novo nome: ").strip()
                             nova_localizacao = input("Digite a nova localização/cidade: ").strip()
                             nova_descricao = input("Digite a nova descrição: ").strip()

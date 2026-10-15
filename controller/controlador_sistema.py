@@ -12,7 +12,7 @@ class ControladorSistema():
         self.__controlador_clinica = ControladorClinica()
         self.__controlador_consulta = ControladorConsulta(self)
         self.__controlador_pagamento = ControladorPagamento()
-        self.__controlador_relatorio = ControladorRelatorio(self.__controlador_clinica,self.__controlador_consulta,self.__controlador_pagamento)
+        self.__controlador_relatorio = ControladorRelatorio(self)
         self.__tela_sistema = TelaSistema(self)
 
     def iniciar(self):
@@ -28,7 +28,7 @@ class ControladorSistema():
         elif opcao  == "4":
             pass #menu de pagamento
         elif opcao =="5":
-            pass #menu relatorio
+            self.__controlador_relatorio.abrir_tela()
         else:
             print("\n[Erro] Opção inválida!")
 
@@ -41,3 +41,9 @@ class ControladorSistema():
 
     def buscar_profissional_registro(self, registro):
         return self.__controlador_pessoa.buscar_profissional_registro(registro)
+
+    def buscar_consulta(self, cpf, data_str, horario_str):
+        return self.__controlador_consulta.buscar_consulta(cpf, data_str, horario_str)
+
+    def obter_todas_consultas(self):
+        return self.__controlador_consulta.listar_consultas()
