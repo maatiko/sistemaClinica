@@ -1,4 +1,3 @@
-from controller.controladorConsulta import ControladorConsulta
 
 class TelaConsulta:
     def __init__(self,controlador_cons):
@@ -102,9 +101,7 @@ class TelaConsulta:
                         raise ValueError("O custo deve ser numérico.")
                     registro = input("Registro do Médico responsável: ")
                     
-                    self.__controlador.adicionar_procedimento_na_consulta(
-                        cpf_pac, data_cons, horario_cons, desc, float(custo), registro
-                    )
+                    self.__controlador.adicionar_procedimento_na_consulta(cpf_pac, data_cons, horario_cons, desc, float(custo), registro)
                     print(" Procedimento adicionado!")
                 except ValueError as e:
                     print(f" Erro: {e}")
@@ -112,9 +109,7 @@ class TelaConsulta:
             elif opcao == "2":
                 try:
                     desc_excluir = input("Descrição do procedimento a excluir: ")
-                    self.__controlador.excluir_procedimento_da_consulta(
-                        cpf_pac, data_atual, horario_atual, desc_excluir
-                    )
+                    self.__controlador.excluir_procedimento_da_consulta(cpf_pac, data_cons, horario_cons, desc_excluir)
                     print(" Procedimento removido!")
                 except ValueError as e:
                     print(f" Erro: {e}")

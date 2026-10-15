@@ -10,7 +10,7 @@ class ControladorSistema():
     def __init__(self):
         self.__controlador_pessoa = ControladorPessoa()
         self.__controlador_clinica = ControladorClinica()
-        self.__controlador_consulta = ControladorConsulta()
+        self.__controlador_consulta = ControladorConsulta(self)
         self.__controlador_pagamento = ControladorPagamento()
         self.__controlador_relatorio = ControladorRelatorio(self.__controlador_clinica,self.__controlador_consulta,self.__controlador_pagamento)
         self.__tela_sistema = TelaSistema(self)

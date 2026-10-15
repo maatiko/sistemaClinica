@@ -27,3 +27,6 @@ class Profissional(Pessoa):
 
     def verificar_tipo(self):
         return "Profissional"
+
+    def __str__(self):
+           return f"Dr(a). {self.nome} | CRM/Registro: {self.registro} | Especialidade: {self.especialidade}"

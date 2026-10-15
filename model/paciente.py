@@ -35,3 +35,11 @@ class Paciente(Pessoa):
 
     def verificar_tipo(self):
         return "Paciente"
+    
+    def __str__(self):
+        if isinstance(self.data_nascimento, str):
+            data_formatada = self.data_nascimento
+        else:
+            data_formatada = self.data_nascimento.strftime("%d/%m/%Y")
+            
+        return f"Nome: {self.nome} | CPF: {self.cpf} | Tel: {self.telefone} | Nasc: {data_formatada}"

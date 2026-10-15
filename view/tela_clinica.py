@@ -1,5 +1,3 @@
-from controller.controladorClinica import ControladorClinica
-
 class TelaClinica:
     def __init__(self,controlador_clin):
         self.__controlador = controlador_clin

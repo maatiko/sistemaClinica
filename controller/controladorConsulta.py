@@ -1,7 +1,6 @@
 from datetime import date, datetime
 from model.consulta import Consulta
 from model.procedimento import Procedimento
-from controller.controlador_sistema import ControladorSistema
 from view.tela_consulta import TelaConsulta
 
 class ControladorConsulta:
@@ -13,16 +12,16 @@ class ControladorConsulta:
     def abrir_tela(self):
         self.__tela_consulta.menu_consulta()
 
-    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional, tipo, valor, data_str, horario_str):
-        clinica = self.__sistema.buscar_clinica_por_nome(nome_clinica)
+    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional, valor, data_str, horario_str):
+        clinica = self.__sistema.buscar_clinica(nome_clinica)
         if not clinica:
             raise ValueError(f"Clínica '{nome_clinica}' não cadastrada.")
 
-        paciente = self.__sistema.buscar_paciente_por_cpf(cpf_paciente)
+        paciente = self.__sistema.buscar_paciente_cpf(cpf_paciente)
         if not paciente:
             raise ValueError(f"Paciente com CPF '{cpf_paciente}' não encontrado.")
 
-        profissional = self.__sistema.buscar_profissional_por_registro(registro_profissional)
+        profissional = self.__sistema.buscar_profissional_registro(registro_profissional)
         if not profissional:
             raise ValueError(f"Profissional (Registro: '{registro_profissional}') não encontrado.")
 
@@ -31,7 +30,7 @@ class ControladorConsulta:
         
         self.__verificar_expediente(clinica, horario_conv)
 
-        nova_consulta = Consulta(clinica, paciente, profissional, tipo, valor, data_conv, horario_conv)
+        nova_consulta = Consulta(clinica, paciente, profissional, valor, data_conv, horario_conv)
         self.__verificar_colisao(nova_consulta)
 
         self.__consultas.append(nova_consulta)
@@ -50,7 +49,6 @@ class ControladorConsulta:
         if not consulta:
             raise ValueError("Consulta não encontrada.")
             
-        from model.procedimento import Procedimento
         proc = Procedimento(desc, custo, prof)
         consulta.adicionar_procedimento(proc)
         return True
@@ -174,7 +172,7 @@ class ControladorConsulta:
     def listar_consultas(self):
             return list(self.consultas)
 
-    def verificar_expediente(self, clinica, horario_consulta):
+    def __verificar_expediente(self, clinica, horario_consulta):
         try:
             if isinstance(clinica.horario_abertura, str):
                 abertura = datetime.strptime(clinica.horario_abertura, "%H:%M").time()

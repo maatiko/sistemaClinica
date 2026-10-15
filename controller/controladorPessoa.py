@@ -64,10 +64,10 @@ class ControladorPessoa:
         return True
 
     def mostrar_pacientes(self):
-        return list(self.__pacientes)
+        return self.__pacientes
 
     def mostrar_profissionais(self):
-        return list(self.__profissionais)
+        return self.__profissionais
 
     
     def alterar_dados_pessoa(

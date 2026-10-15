@@ -1,9 +1,25 @@
-from controller.controladorPessoa import ControladorPessoa
 from datetime import date,datetime
 
 class TelaPessoa:
     def __init__(self,controlador_pes):
         self.__controlador = controlador_pes
+
+    def menu_principal_pessoa(self):
+        while True:
+            print("\n--- MÓDULO DE PESSOAS ---")
+            print("1. Gerenciar Pacientes")
+            print("2. Gerenciar Profissionais")
+            print("0. Retornar ao menu principal")
+            opcao = input("Insira sua opção: ").strip()
+            
+            if opcao == "1":
+                self.menu_paciente()
+            elif opcao == "2":
+                self.menu_profissional()
+            elif opcao == "0":
+                break
+            else:
+                print("Escolha inválida!")
 
     def menu_paciente(self):
             while True:
@@ -48,7 +64,7 @@ class TelaPessoa:
                     print(f"Resultado: {alterar_paciente}")
                 
                 elif opcao == "4":
-                    pacientes = self.__controlador.listar_pacientes()
+                    pacientes = self.__controlador.mostrar_pacientes()
                     if not pacientes:
                         print("Não há pacientes cadastrados")
                     else:
@@ -105,7 +121,7 @@ class TelaPessoa:
                     print(f"Resultado: {alterar_profissional}")
                 
                 elif opcao == "4":
-                    profissionais = self.__controlador.listar_profissionais()
+                    profissionais = self.__controlador.mostrar_profissionais()
                     if not profissionais:
                         print("Não há profissionais cadastrados")
                     else:
