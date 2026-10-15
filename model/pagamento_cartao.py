@@ -1,5 +1,5 @@
 from .pagamento import Pagamento
-from ..exception.excecoes import DadosCartaoInvalidos
+from exception.excecoes import DadosCartaoInvalidos
 
 
 class PagamentoCartao(Pagamento):

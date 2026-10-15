@@ -1,5 +1,5 @@
 from .pagamento import Pagamento
-from ..exception.excecoes import DadosPixInvalidos
+from exception.excecoes import DadosPixInvalidos
 
 
 class PagamentoPix(Pagamento):

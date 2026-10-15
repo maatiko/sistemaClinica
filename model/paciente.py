@@ -1,12 +1,14 @@
+from datetime import date, datetime
+
 from model.abstractPessoa import Pessoa
-from datetime import date,datetime
+from exception.excecoes import DataInvalida
 
 
 class Paciente(Pessoa):
 
     def __init__(self, nome, cpf, telefone, data_nascimento):
         super().__init__(nome, cpf, telefone)
-        self.__data_nascimento = data_nascimento
+        self.data_nascimento = data_nascimento
 
     @property
     def data_nascimento(self):
@@ -14,32 +16,46 @@ class Paciente(Pessoa):
 
     @data_nascimento.setter
     def data_nascimento(self, nova_data):
-        if isinstance(nova_data, date):
-            self.__data_nascimento = nova_data
-        else:
-            raise ValueError(
-                "A data de nascimento deve ser um objeto date."
+        if isinstance(nova_data, datetime):
+            nova_data = nova_data.date()
+
+        if isinstance(nova_data, str):
+            try:
+                nova_data = datetime.strptime(
+                    nova_data, "%d/%m/%Y"
+                ).date()
+            except ValueError:
+                raise DataInvalida(
+                    "Data de nascimento inválida. Use DD/MM/AAAA."
+                )
+
+        if not isinstance(nova_data, date):
+            raise DataInvalida(
+                "A data de nascimento deve ser uma data válida."
             )
+
+        if nova_data > date.today():
+            raise DataInvalida(
+                "A data de nascimento não pode estar no futuro."
+            )
+
+        self.__data_nascimento = nova_data
 
     def verificar_idade(self):
         hoje = date.today()
-        idade = (
-            hoje.year - self.__data_nascimento.year
-            - (
-                (hoje.month, hoje.day)
-                < (self.__data_nascimento.month,
-                   self.__data_nascimento.day)
-            )
+        nascimento = self.__data_nascimento
+
+        return (
+            hoje.year - nascimento.year
+            - ((hoje.month, hoje.day) < (nascimento.month, nascimento.day))
         )
-        return idade
 
     def verificar_tipo(self):
         return "Paciente"
-    
+
     def __str__(self):
-        if isinstance(self.data_nascimento, str):
-            data_formatada = self.data_nascimento
-        else:
-            data_formatada = self.data_nascimento.strftime("%d/%m/%Y")
-            
-        return f"Nome: {self.nome} | CPF: {self.cpf} | Tel: {self.telefone} | Nasc: {data_formatada}"
+        data_formatada = self.data_nascimento.strftime("%d/%m/%Y")
+        return (
+            f"Nome: {self.nome} | CPF: {self.cpf} | "
+            f"Tel: {self.telefone} | Nasc: {data_formatada}"
+        )
