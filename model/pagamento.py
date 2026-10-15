@@ -1,6 +1,6 @@
 from datetime import date
 
-from .excecoes import (
+from ..exception.excecoes import (
     DataPagamentoInvalida,
     ValorInvalido,
     CampoObrigatorio,
