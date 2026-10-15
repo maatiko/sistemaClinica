@@ -30,7 +30,6 @@ class ControladorConsulta:
         
         self.__verificar_expediente(clinica, horario_conv)
 
-        from model.consulta import Consulta
         nova_consulta = Consulta(clinica, paciente, profissional, tipo, valor, data_conv, horario_conv)
         self.__verificar_colisao(nova_consulta)
 
