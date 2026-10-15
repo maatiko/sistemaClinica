@@ -1,6 +1,11 @@
+<<<<<<< Updated upstream
 from datetime import date
 
-from ..exception.excecoes import (
+=======
+from datetime import date,datetime
+from abc import ABC,abstractmethod
+>>>>>>> Stashed changes
+from exception.excecoes import (
     DataPagamentoInvalida,
     ValorInvalido,
     CampoObrigatorio,
@@ -8,59 +13,61 @@ from ..exception.excecoes import (
 
 
 class Pagamento:
-
-    modalidade = "Genérico"
-
     def __init__(
         self,
         consulta,
-        paciente,
-        valor,
-        data_pagamento,
-    ):
-        if consulta is None or paciente is None:
-            raise CampoObrigatorio(
-                "Consulta e paciente são obrigatórios para o pagamento."
-            )
+        valor_pago,
+        data_pagamento):
+        if valor_pago <= 0 and valor_pago is not None:
+                    raise ValueError("O valor pago deve ser maior que zero.")
+        self.__consulta = consulta
+        self.__valor_pago = valor_pago        
+         
+        if data_pagamento is None:
+                self.__data_pagamento = datetime.now()
+        elif isinstance(data_pagamento, str):
+                try:
+                    self.__data_pagamento = datetime.strptime(data_pagamento, "%d/%m/%Y %H:%M")
+                except ValueError:
+                    try:
+                        self.__data_pagamento = datetime.strptime(data_pagamento, "%d/%m/%Y")
+                    except ValueError:
+                        self.__data_pagamento = datetime.now()
+        else:
+                self.__data_pagamento = data_pagamento
+    def __validar_data_pagamento(self):
+        if hasattr(self.__consulta, 'data'):
+            data_c = self.__consulta.data
+            if isinstance(data_c, str):
+                try:
+                    data_c = datetime.strptime(data_c, "%d/%m/%Y").date()
+                except ValueError:
+                    data_c = None
+            elif isinstance(data_c, datetime):
+                data_c = data_c.date()
 
-        try:
-            valor = float(valor)
-        except (TypeError, ValueError):
-            raise ValorInvalido(
-                "O valor pago deve ser numérico."
-            )
+            data_p = self.__data_pagamento.date() if isinstance(self.__data_pagamento, datetime) else self.__data_pagamento
 
-        if valor <= 0:
-            raise ValorInvalido(
-                "O valor pago deve ser maior que zero."
-            )
+            if data_c and isinstance(data_p, date) and data_p > data_c:
+                raise ValueError(f"Data de pagamento inválida! O pagamento ({data_p.strftime('%d/%m/%Y')}) não pode ser realizado após a data do atendimento ({data_c.strftime('%d/%m/%Y')}).")
+    @property
+    def consulta(self):
+        return self.__consulta
+    
+    @property
+    def paciente(self):
+        if hasattr(self.__consulta, "paciente"):
+            return self.__consulta.paciente
+        return None
+    
+    @property
+    def valor_pago(self):
+        return self.__valor_pago
 
-        if isinstance(data_pagamento, str):
-            try:
-                data_pagamento = date.fromisoformat(data_pagamento)
-            except ValueError:
-                raise DataPagamentoInvalida(
-                    "Data de pagamento inválida. Use AAAA-MM-DD."
-                )
+    @property
+    def data_pagamento(self):
+        return self.__data_pagamento
 
-        if not isinstance(data_pagamento, date):
-            raise DataPagamentoInvalida(
-                "Data de pagamento inválida."
-            )
-
-        if data_pagamento > consulta.data:
-            raise DataPagamentoInvalida(
-                "O pagamento deve ser realizado até a data do atendimento."
-            )
-
-        self.consulta = consulta
-        self.paciente = paciente
-        self.valor = valor
-        self.data_pagamento = data_pagamento
-
-    def __str__(self):
-        return (
-            f"{self.data_pagamento.isoformat()} | "
-            f"{self.modalidade} | {self.paciente.nome} | "
-            f"R$ {self.valor:.2f}"
-        )
+    def descricao_detalhada(self):
+        pass
+    

@@ -1,36 +1,29 @@
+<<<<<<< Updated upstream
 from .pagamento import Pagamento
-from ..exception.excecoes import DadosPixInvalidos
+from exception.excecoes import DadosPixInvalidos
 
+=======
+from model.pagamento import Pagamento
+from exception.excecoes import DadosPixInvalidos
+>>>>>>> Stashed changes
 
 class PagamentoPix(Pagamento):
-
-    modalidade = "PIX"
-
     def __init__(
         self,
         consulta,
-        paciente,
-        valor,
+        valor_pago,
         data_pagamento,
-        cpf_pix,
+        cpf_pagador,
     ):
         super().__init__(
             consulta,
-            paciente,
-            valor,
-            data_pagamento,
+            valor_pago,
+            data_pagamento
         )
-
-        if not isinstance(cpf_pix, str):
-            raise DadosPixInvalidos(
-                "O CPF do pagador no PIX é obrigatório."
-            )
-
-        cpf = "".join(c for c in cpf_pix if c.isdigit())
-
-        if len(cpf) != 11:
-            raise DadosPixInvalidos(
-                "O CPF do pagador no PIX deve conter 11 dígitos."
-            )
-
-        self.cpf_pix = cpf
+        self.__cpf_pagador = str(cpf_pagador)
+    @property
+    def cpf_pagador(self):
+        return self.__cpf_pagador
+    
+    def descricao_detalhada(self) :
+        return f"PIX | Chave: {self.__cpf_pix}"

@@ -1,40 +1,52 @@
+<<<<<<< Updated upstream
 from .pagamento import Pagamento
-from ..exception.excecoes import DadosCartaoInvalidos
+=======
+from model.pagamento import Pagamento
+>>>>>>> Stashed changes
+from exception.excecoes import DadosCartaoInvalidos
 
 
 class PagamentoCartao(Pagamento):
-
-    modalidade = "Cartão de crédito"
-
     def __init__(
         self,
         consulta,
-        paciente,
-        valor,
-        data_pagamento,
+        valor_pago,
         numero_cartao,
         bandeira,
+        parcelas:int = 1,
+        data_pagamento = None
+        
     ):
         super().__init__(
             consulta,
-            paciente,
-            valor,
-            data_pagamento,
+            valor_pago,
+            data_pagamento
         )
+        self.__numero_cartao = str(numero_cartao)
+        self.__bandeira = str(bandeira)
+        self.__parcelas = parcelas
+    
+    @property
+    def numero_cartao(self):
+        return self.__numero_cartao
 
-        numero = "".join(
-            c for c in str(numero_cartao) if c.isdigit()
-        )
+    @property
+    def bandeira(self):
+        return self.__bandeira
 
-        if not 13 <= len(numero) <= 19:
-            raise DadosCartaoInvalidos(
-                "O número do cartão deve conter entre 13 e 19 dígitos."
-            )
+    @property
+    def parcelas(self):
+        return self.__parcelas
+    @property
+    def modalidade(self):
+        return self.__modalidade
 
-        if not isinstance(bandeira, str) or not bandeira.strip():
-            raise DadosCartaoInvalidos(
-                "A bandeira do cartão é obrigatória."
-            )
+    @property
+    def parcelas(self):
+        return self.__parcelas
 
-        self.numero_cartao = numero
-        self.bandeira = bandeira.strip()
+    def descricao_detalhada(self) -> str:
+        desc = f"Cartão de {self.__modalidade.capitalize()}"
+        if self.__modalidade.lower() == "credito" or self.__modalidade.lower() == "crédito":
+            desc += f" em {self.__parcelas}x"
+        return desc
