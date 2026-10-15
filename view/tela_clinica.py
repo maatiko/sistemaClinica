@@ -1,112 +1,64 @@
-from datetime import datetime
-
-from exception.excecoes import ErroClinica
-
-
 class TelaClinica:
+    def __init__(self,controlador_clin):
+        self.__controlador = controlador_clin
 
-    def __init__(self, controlador_clinica):
-        self.__controlador = controlador_clinica
-
-    def iniciar(self):
+    def menu_clinica(self):
         while True:
-            print("\n===== MENU DE CLÍNICAS =====")
-            print("1 - Cadastrar clínica")
-            print("2 - Alterar clínica")
-            print("3 - Excluir clínica")
-            print("4 - Listar clínicas")
-            print("0 - Voltar")
+                    print("\n--- Menu de Clínica ---")
+                    print("Escolha uma opção:")
+                    print("1. Cadastrar Clínica")
+                    print("2. Excluir Clínica")
+                    print("3. Alterar Clínica")
+                    print("4. Listar Clinícas")
+                    print("0. Retornar ao menu")
+                    opcao = input("Insira sua opção: ")
+        
+                    if opcao =="1":
+                        try:
+                            nome = input("Nome da clínica: ").strip()
+                            cidade = input("Cidade: ").strip()
+                            descricao = input("Descrição: ").strip()
+                            abertura = input("Horário de Abertura (HH:MM): ").strip()
+                            fechamento = input("Horário de Fechamento (HH:MM): ").strip()
+            
+                            self.__controlador.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
+                            print(f"Clínica adicionada com sucesso!")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
+                    elif opcao == "2":
+                        try:
+                            nome = input("Nome da Clínica para ser excluída: ")
+                            self.__controlador.excluir_clinica(nome)
+                            print(f"Clínica Excluída com sucesso")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
+                    elif opcao == "3":
+                        nome_atual = input("Nome da Clínica para ser alterada: ").strip()
+                        try:
+                            print("Cliníca Encontrada! Digite os novos dados:")
+                            novo_nome = input("Digite o novo nome: ").strip()
+                            nova_localizacao = input("Digite a nova localização/cidade: ").strip()
+                            nova_descricao = input("Digite a nova descrição: ").strip()
+                            novo_horario_abertura = input("Digite o novo horário de abertura: ").strip()
+                            novo_horario_fechamento = input("Digite o novo horário de fechamento: ").strip()
+                            self.__controlador.alterar_dados_clinica(nome_atual,novo_nome,nova_localizacao,nova_descricao,novo_horario_abertura,novo_horario_fechamento)
+                            print("Dados de Clínica Alterados com Sucesso!")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
 
-            opcao = input("Escolha uma opção: ").strip()
-
-            if opcao == "0":
-                return
-
-            try:
-                if opcao == "1":
-                    self.cadastrar_clinica()
-                elif opcao == "2":
-                    self.alterar_clinica()
-                elif opcao == "3":
-                    self.excluir_clinica()
-                elif opcao == "4":
-                    self.listar_clinicas()
-                else:
-                    print("Opção inválida.")
-
-            except (ErroClinica, ValueError, TypeError, AttributeError) as erro:
-                print(f"\n[Erro] {erro}")
-
-    def cadastrar_clinica(self):
-        nome = input("Nome: ").strip()
-        localizacao = input("Localização: ").strip()
-        descricao = input("Descrição: ").strip()
-        abertura = input("Horário de abertura (HH:MM): ").strip()
-        fechamento = input("Horário de fechamento (HH:MM): ").strip()
-
-        if not all([nome, localizacao, descricao, abertura, fechamento]):
-            raise ValueError("Todos os campos são obrigatórios.")
-
-        self.validar_horario(abertura)
-        self.validar_horario(fechamento)
-
-        self.__controlador.adicionar_clinica(
-            nome, localizacao, descricao, abertura, fechamento
-        )
-        print("Clínica cadastrada com sucesso.")
-
-    def alterar_clinica(self):
-        nome_atual = input("Nome atual da clínica: ").strip()
-        novo_nome = input("Novo nome: ").strip()
-        localizacao = input("Nova localização: ").strip()
-        descricao = input("Nova descrição: ").strip()
-        abertura = input("Novo horário de abertura (HH:MM): ").strip()
-        fechamento = input("Novo horário de fechamento (HH:MM): ").strip()
-
-        if not all([
-            nome_atual, novo_nome, localizacao,
-            descricao, abertura, fechamento
-        ]):
-            raise ValueError("Todos os campos são obrigatórios.")
-
-        self.validar_horario(abertura)
-        self.validar_horario(fechamento)
-
-        self.__controlador.alterar_dados_clinica(
-            nome_atual,
-            novo_nome,
-            localizacao,
-            descricao,
-            abertura,
-            fechamento,
-        )
-        print("Clínica alterada com sucesso.")
-
-    def excluir_clinica(self):
-        nome = input("Nome da clínica que deseja excluir: ").strip()
-
-        if not nome:
-            raise ValueError("O nome da clínica é obrigatório.")
-
-        self.__controlador.excluir_clinica(nome)
-        print("Clínica excluída com sucesso.")
-
-    def listar_clinicas(self):
-        clinicas = self.__controlador.listar_clinicas()
-
-        if not clinicas:
-            print("Nenhuma clínica cadastrada.")
-            return
-
-        print("\n===== CLÍNICAS CADASTRADAS =====")
-        for clinica in clinicas:
-            print(clinica)
-
-    @staticmethod
-    def validar_horario(horario):
-        try:
-            datetime.strptime(horario, "%H:%M")
-        except (ValueError, TypeError):
-            raise ValueError(
-                "Horário inválido. Informe no formato HH:MM."
-            )
+                    elif opcao == "4":
+                        try:
+                            clinicas = self.__controlador.listar_clinicas()
+                            if not clinicas:
+                                print("Não há clinicas cadastradas")
+                            else:
+                                for indice,clinica in enumerate(clinicas):
+                                    print(f"{indice + 1} {clinica}")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")        
+                    elif opcao =="0":
+                        print("Retornando ao menu principal...")
+                        break
+        
+                    else:
+                        print("Escolha Inválida! Tente Novamente!")
