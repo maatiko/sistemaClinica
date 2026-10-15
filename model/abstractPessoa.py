@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 class Pessoa(ABC):
 
     def __init__(self, nome, cpf, telefone):
-        self.nome = nome
-        self.cpf = cpf
-        self.telefone = telefone
+        self.__nome = nome
+        self.__cpf = cpf
+        self.__telefone = telefone
 
     @property
     def nome(self):

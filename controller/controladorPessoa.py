@@ -5,15 +5,15 @@ from model.profissional import Profissional
 
 class ControladorPessoa:
     def __init__(self):
-        self.pacientes = []
-        self.profissionais = []
+        self.__pacientes = []
+        self.__profissionais = []
 
     def adicionar_paciente(self, nome, cpf, telefone, data_nascimento):
-        if any(p.cpf == cpf for p in self.pacientes + self.profissionais):
+        if any(p.cpf == cpf for p in self.__pacientes + self.__profissionais):
             raise ValueError("Já existe uma pessoa com esse CPF.")
 
         paciente = Paciente(nome, cpf, telefone, data_nascimento)
-        self.pacientes.append(paciente)
+        self.__pacientes.append(paciente)
 
         return True
 
@@ -22,25 +22,25 @@ class ControladorPessoa:
             raise ValueError("Paciente não informado.")
 
         paciente = next(
-            (p for p in self.pacientes if p.cpf == cpf),
+            (p for p in self.__pacientes if p.cpf == cpf),
             None
         )
 
         if paciente is None:
             raise ValueError("Paciente não encontrado.")
 
-        self.pacientes.remove(paciente)
+        self.__pacientes.remove(paciente)
 
         return True
 
     def adicionar_profissional(self, nome, cpf, telefone, especialidade, registro):
-        if any(p.cpf == cpf for p in self.pacientes + self.profissionais):
+        if any(p.cpf == cpf for p in self.__pacientes + self.__profissionais):
             raise ValueError("Já existe uma pessoa com esse CPF.")
 
         profissional = Profissional(
             nome, cpf, telefone, especialidade, registro
         )
-        self.profissionais.append(profissional)
+        self.__profissionais.append(profissional)
 
         return True
 
@@ -49,28 +49,22 @@ class ControladorPessoa:
             raise ValueError("Profissional não informado.")
 
         profissional = next(
-            (p for p in self.profissionais if p.cpf == cpf),
+            (p for p in self.__profissionais if p.cpf == cpf),
             None
         )
 
         if profissional is None:
             raise ValueError("Profissional não encontrado.")
 
-        self.profissionais.remove(profissional)
+        self.__profissionais.remove(profissional)
 
         return True
 
     def mostrar_pacientes(self):
-        if not self.pacientes:
-            return []
-
-        return list(self.pacientes)
+        return list(self.__pacientes)
 
     def mostrar_profissionais(self):
-        if not self.profissionais:
-            return []
-
-        return list(self.profissionais)
+        return list(self.__profissionais)
 
     
     def alterar_dados_pessoa(
@@ -83,7 +77,7 @@ class ControladorPessoa:
 
         pessoa = next(
             (
-                p for p in self.pacientes + self.profissionais
+                p for p in self.__pacientes + self.__profissionais
                 if p.cpf == cpf_atual
             ),
             None
@@ -94,7 +88,7 @@ class ControladorPessoa:
 
         if novo_cpf != cpf_atual and any(
             p.cpf == novo_cpf
-            for p in self.pacientes + self.profissionais
+            for p in self.__pacientes + self.__profissionais
         ):
             raise ValueError("Já existe uma pessoa com esse CPF.")
 
@@ -118,3 +112,39 @@ class ControladorPessoa:
             pessoa.registro = novo_registro
 
         return True
+
+    def verificar_existencia_paciente(self,cpf_paciente):
+        if cpf_paciente is None or cpf_paciente.strip() == "":
+            raise ValueError("Paciente não informada.")
+        
+        existe = any(c.cpf == cpf_paciente for c in self.__pacientes)
+        
+        if not existe:
+            raise ValueError("Paciente não encontrado.")
+        return True
+
+    def verificar_existencia_profissional(self,cpf_profissional):
+        if cpf_profissional is None or cpf_profissional.strip() == "":
+            raise ValueError("Profissional não informado.")
+        
+        existe = any(c.registro == cpf_profissional for c in self.__profissionais)
+        
+        if not existe:
+            raise ValueError("Profissional não encontrado.")
+        return True
+
+    def buscar_paciente_cpf(self,cpf):
+        if not cpf:
+            return None
+
+        for paciente in self.__pacientes:
+            if paciente.cpf == cpf:
+                return paciente
+
+    def buscar_profissional_registro(self,registro):
+            if not registro:
+                return None
+    
+            for profissional in self.__profissionais:
+                if profissional.registro == registro:
+                    return profissional

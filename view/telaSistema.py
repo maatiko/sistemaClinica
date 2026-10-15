@@ -1,3 +1,4 @@
+from datetime import datetime
 class TelaSistema:
     def __init__(self,ControladorSistema):
         self.__sistema = ControladorSistema
@@ -102,29 +103,51 @@ class TelaSistema:
             print("4. Listar Pacientes")
             print("0. Retornar ao menu")
             opcao = input("Insira sua opção: ")
+
             if opcao =="1":
+                
                 nome = input("Nome do Paciente: ")
                 cpf = input("CPF do Paciente: ")
                 telefone = input("Telefone do paciente: ")
-                data_nascimento = input("Data de Nascimento do Paciente: ")
-
+                data_nascimento = input("Data de Nascimento do Paciente (DD/MM/AAAA): ")
+                data_convertida = datetime.strptime(data_nascimento,"%d/%m/%Y").date()
                 adicionar_paciente = self.__sistema.controlador_pessoa.adicionar_paciente(nome, cpf,telefone,data_nascimento )
                 print(f"\n[Resultado]: {adicionar_paciente}")
+            
+
             elif opcao == "2":
 
-                nome = input("Nome do Paciente para ser excluída: ")
-                excluir_clinica = self.__sistema.controlador_pessoa.excluir_paciente(nome)
-                print(f"Resultado: {excluir_clinica}")
+                cpf_pac = input("CPF do Paciente para ser excluída: ")
+                excluir_paciente = self.__sistema.controlador_pessoa.remover_paciente(cpf_pac)
+                print(f"Resultado: {excluir_paciente}")
 
             elif opcao == "3":
-                nome = input("Nome da Clínica para ser alterada: ")
-                alterar_clinica = self.__sistema.controlador_pessoa.alterar_paciente(nome)
-                print(f"Resultado: {alterar_clinica}")
+
+                cpf_atual = input("CPF do Paciente para ser alterado: ")
+                if self.__sistema.controlador_pessoa.verificar_existencia_paciente(cpf_atual):
+                    print("CPF Encontrado! Vamos alterar o cadastro: ")
+                    novo_nome = input("Nome do Paciente: ")
+                    novo_cpf = input("CPF do Paciente: ")
+                    novo_telefone = input("Telefone do paciente: ")
+                    nova_data_nascimento = input("Data de Nascimento do Paciente: ")     
+                    data_convertida = datetime.strptime(nova_data_nascimento,"%d/%m/%Y").date()
+
+                    alterar_paciente = self.__sistema.controlador_pessoa.alterar_dados_pessoa(cpf_atual,novo_nome, novo_cpf, novo_telefone,data_convertida)
+                print(f"Resultado: {alterar_paciente}")
+            
             elif opcao == "4":
-                print(self.__sistema.controlador_pessoa.listar_pacientes())
+                pacientes = self.__sistema.controlador_clinica.listar_pacientes()
+                if not pacientes:
+                    print("Não há pacientes cadastrados")
+                else:
+                    print("\n--Lista Pacientes--")
+                    for indice,paciente in enumerate(pacientes):
+                        print(f"{indice + 1} {paciente}")
+    
             elif opcao =="0":
                 print("Retornando ao menu principal...")
                 break
+
             else:
                 print("Escolha Inválida! Tente Novamente!")
 
@@ -140,34 +163,50 @@ class TelaSistema:
             opcao = input("Insira sua opção: ")
 
             if opcao =="1":
+                
                 nome = input("Nome do Profissional: ")
                 cpf = input("CPF do Profissional: ")
                 telefone = input("Telefone do Profissional: ")
-                registro = input("Registro do Profissional: ")
+                registro = input("Registro do Profissional ")
                 especialidade = input("Especialidade do Profissional: ")
-
-                adicionar_prof = self.__sistema.controlador_pessoa.adicionar_profissional(nome, cpf, telefone, registro, especialidade)
-                print(f"\n[Resultado]: {adicionar_prof}")
-
+                adicionar_profissional = self.__sistema.controlador_pessoa.adicionar_profissional(nome, cpf,telefone,registro,especialidade )
+                print(f"\n[Resultado]: {adicionar_profissional}")
+            
             elif opcao == "2":
-                nome = input("Registro do Profissional para ser excluída: ")
-                excluir_prof = self.__sistema.controlador_pessoa.excluir_profissional(registro)
+
+                cpf_prof = input("CPF do Profissional para ser excluída: ")
+                excluir_prof = self.__sistema.controlador_pessoa.remover_profissional(cpf_prof)
                 print(f"Resultado: {excluir_prof}")
 
             elif opcao == "3":
-                nome = input("Nome da Clínica para ser alterada: ")
-                alterar_prof = self.__sistema.controlador_pessoa.alterar_profissional(nome)
-                print("Resultado")
-    
-            elif opcao == "4":
-                print(self.__sistema.controlador_pessoa.listar_profissionais())
 
+                cpf_atual = input("CPF do Profissional para ser alterado: ")
+                if self.__sistema.controlador_pessoa.verificar_existencia_profissional(cpf_atual):
+                    print("CPF Encontrado! Vamos alterar o cadastro: ")
+                    novo_nome = input("Nome do Profissional: ")
+                    novo_cpf = input("CPF do Profissional: ")
+                    novo_telefone = input("Telefone do Profissional: ")
+                    novo_registro = input("Registro do Profissional: ")  
+                    nova_especialidade = input("A especialidade do Profissional:")   
+
+                    alterar_profissional = self.__sistema.controlador_pessoa.alterar_dados_pessoa(cpf_atual,novo_nome, novo_cpf, novo_telefone,novo_registro,novo_telefone)
+                print(f"Resultado: {alterar_profissional}")
+            
+            elif opcao == "4":
+                profissionais = self.__sistema.controlador_clinica.listar_profissionais()
+                if not profissionais:
+                    print("Não há profissionais cadastrados")
+                else:
+                    print("\n--Lista Profissionais--")
+                    for indice,prof in enumerate(profissionais):
+                        print(f"{indice + 1} {prof}")
+    
             elif opcao =="0":
                 print("Retornando ao menu principal...")
                 break
 
             else:
-                print("Escolha Inválida! Tente Novamente!")        
+                print("Escolha Inválida! Tente Novamente!")  
 
     def menu_consulta(self):
         while True:
@@ -181,24 +220,47 @@ class TelaSistema:
             opcao = input("Insira sua opção: ")
 
             if opcao =="1":
-                nome = input("Nome da clínica: ")
-                cidade = input("Cidade: ")
-                descricao = input("Descrição: ")
-                abertura = input("Horário de Abertura (HH:MM): ")
-                fechamento = input("Horário de Fechamento (HH:MM): ")
+                nome_clinica = input("Nome da clínica: ")
+                cpf_pac = input("CPF do Paciente: ")
+                registro_prof = input("Registro do Profissional: ")
+                tipo_consulta = input("Tipo de Consulta: ")
+                valor = input("Valor da Consulta R$: ")
+                if not valor.replace(".","",1).isdigit():
+                    raise ValueError("Deve ser númerico apenas")
+                data_cons = input("Data da Consulta (DD/MM/AAAA): ")
+                horario_cons = input("Horário da Consulta (HH:MM): ")
+                self.__sistema.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, valor, data_cons,horario_cons)
+                print(f"\n[Resultado]: ")
 
-                adicionar_clinica = self.__sistema.controlador_consulta.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
-                print(f"\n[Resultado]: {adicionar_clinica}")
             elif opcao == "2":
-                nome = input("Nome da Clínica para ser excluída: ")
-                excluir_clinica = self.__sistema.controlador_consulta.excluir_clinica(nome)
-                print(f"Resultado: {excluir_clinica}")
+
+                cpf_pac = input("CPF do paciente para a consulta ser excluída: ")
+                data_consulta = input("Data da consulta a ser cancelada (DD/MM/AAAA): ")
+                horario_consulta = input("Horário da consulta a ser cancelada (HH:MM): ")
+                
+                excluir_consulta = self.__sistema.controlador_sistema.excluir_consulta(cpf_pac,data_consulta,horario_consulta)
+                print(f"Resultado: {excluir_consulta}")
+
             elif opcao == "3":
-                nome = input("Nome da Clínica para ser alterada: ")
-                alterar_clinica = self.__sistema.controlador_consulta.alterar_clinica(nome)
-                print("Resultado")
+                    print("Primeiro, identifique a consulta atual:")
+                    cpf_paciente = input("CPF do Paciente: ")
+                    data_atual = input("Data atual da consulta (DD/MM/AAAA): ")
+                    horario_atual = input("Horário atual da consulta (HH:MM): ")                
+                    if self.__sistema.controlador_consulta.verificar_existencia_consulta(cpf_paciente, data_atual, horario_atual ):
+                        print("Consulta achada, vamos reagendá-lá: ")
+                        nova_data = input("Nova Data (DD/MM/AAAA): ")
+                        novo_horario = input("Novo Horário (HH:MM): ")
+                        self.__sistema.alterar_consulta(cpf_paciente, data_atual, horario_atual, nova_data, novo_horario)
+                        print("Reagendamento feito com sucesso")
             elif opcao == "4":
-                print(self.__sistema.controlador_consulta.listar_clinicas())
+                consultas = self.__sistema.controlador_consultar.listar_consultas()
+                if not consultas:
+                    print("Não há consultas cadastrados")
+                else:
+                    print("\n--Lista Consultas--")
+                    for indice,consulta in enumerate(consultas):
+                        print(f"{indice + 1} {consulta}")     
+
             elif opcao =="0":
                 print("Retornando ao menu principal...")
                 break

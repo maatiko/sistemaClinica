@@ -37,3 +37,34 @@ class ControladorSistema():
     @property
     def controlador_pessoa(self):
         return self.__controlador_pessoa
+
+    def agendar_consulta(self, cpf_paciente, registro_profissional,nome_clinica,tipo,valor,data,horario):
+        clinica_encontrada = self.controlador_clinica.buscar_clinica_por_nome(nome_clinica)
+        if not clinica_encontrada:
+            raise ValueError(f"Clínica '{nome_clinica}' não cadastrada no sistema.")
+
+        paciente_encontrado = self.controlador_pessoa.buscar_paciente_por_cpf(cpf_paciente)
+        if not paciente_encontrado:
+            raise ValueError(f"Paciente com CPF '{cpf_paciente}' não encontrado.")
+
+        profissional_encontrado = self.controlador_pessoa.buscar_profissional_por_registro(registro_profissional)
+        if not profissional_encontrado:
+            raise ValueError(f"Profissional com registro '{registro_profissional}' não encontrado.")
+
+        self.controlador_consulta.agendar_consulta(
+            clinica_encontrada, 
+            paciente_encontrado, 
+            profissional_encontrado, 
+            tipo, 
+            valor, 
+            data, 
+            horario
+        )
+
+    def excluir_consulta(self, cpf_paciente, data_str, horario_str):
+        return self.controlador_consulta.excluir_consulta(cpf_paciente, data_str, horario_str)
+
+def alterar_consulta(self, cpf_paciente, data_atual, horario_atual, nova_data, novo_horario):
+        return self.controlador_consulta.alterar_dados_consulta(
+            cpf_paciente, data_atual, horario_atual, nova_data, novo_horario
+        )

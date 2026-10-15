@@ -66,3 +66,11 @@ class ControladorClinica:
         if not existe:
             raise ValueError("Clínica não encontrada.")
         return True
+
+    def buscar_clinica_nome(self, nome_clinica):
+        if not nome_clinica:
+            return None
+        
+        for clinica in self.__clinicas:
+            if clinica.nome == nome_clinica:
+                return clinica
