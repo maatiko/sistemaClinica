@@ -14,6 +14,9 @@ class ControladorConsulta:
 
     def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional,tipo, valor, data_str, horario_str):
         clinica = self.__sistema.buscar_clinica(nome_clinica)
+        if not nome_clinica or not cpf_paciente or not registro_profissional or not tipo or not data_str or not horario_str:
+            raise ValueError("Todos os campos do agendamento são obrigatórios.")
+        
         if not clinica:
             raise ValueError(f"Clínica '{nome_clinica}' não cadastrada.")
 
@@ -133,64 +136,11 @@ class ControladorConsulta:
         return True
 
 
-    def __encontrar_consulta(self, cpf_paciente, data_convertida, horario_convertido):
-        if not cpf_paciente or not data_convertida or not horario_convertido:
-            return None
-
-        for consulta in self.__consultas:
-            if (consulta.paciente.cpf == cpf_paciente and 
-                consulta.data == data_convertida and 
-                consulta.horario == horario_convertido):
-                return consulta
-                
-        return None
-    
-    def __converter_data(self, data_consulta):
-        if isinstance(data_consulta, str):
-            try:
-                data_consulta = datetime.strptime(data_consulta, "%d/%m/%Y").date()
-            except ValueError:
-                raise ValueError("Data inválida. Use o formato DD/MM/AAAA.")
-        elif isinstance(data_consulta, datetime):
-            data_consulta = data_consulta.date()
-
-        if data_consulta < date.today():
-            raise ValueError("A data da consulta não pode estar no passado.")
-        
-        return data_consulta
-
-    def __converter_horario(self, horario_str):
-        if not horario_str:
-            raise ValueError("Horário não informado.")
-        
-        try:
-            return datetime.strptime(horario_str, "%H:%M").time()
-        except ValueError:
-            raise ValueError("Formato de horário inválido. Use HH:MM (ex: 14:30).")
-
 
     def listar_consultas(self):
-            return list(self.consultas)
+            return list(self.__consultas)
 
-    def __verificar_expediente(self, clinica, horario_consulta):
-        try:
-            if isinstance(clinica.horario_abertura, str):
-                abertura = datetime.strptime(clinica.horario_abertura, "%H:%M").time()
-            else:
-                abertura = clinica.horario_abertura
-                
-            if isinstance(clinica.horario_fechamento, str):
-                fechamento = datetime.strptime(clinica.horario_fechamento, "%H:%M").time()
-            else:
-                fechamento = clinica.horario_fechamento
-        except ValueError:
-            raise ValueError("O horário de funcionamento da clínica está em um formato inválido no sistema.")
-
-        if horario_consulta < abertura or horario_consulta > fechamento:
-            raise ValueError(
-                f"Horário fora do expediente! A {clinica.nome} funciona de "
-                f"{abertura.strftime('%H:%M')} às {fechamento.strftime('%H:%M')}."
-            )
+   
     def alterar_dados_consulta(self, cpf, data_atual, hor_atual, nova_data, novo_horario):
         data_conv_atual = self.__converter_data(data_atual)
         hor_conv_atual = self.__converter_horario(hor_atual)
@@ -228,4 +178,62 @@ class ControladorConsulta:
                 return True 
                 
         raise ValueError("Consulta não encontrada com esses dados.")
+    def buscar_consulta(self, cpf, data_str, horario_str):
+        data_conv = self.__converter_data(data_str)
+        hor_conv = self.__converter_horario(horario_str)
+        return self.__encontrar_consulta(cpf, data_conv, hor_conv)
     
+    def __encontrar_consulta(self, cpf_paciente, data_convertida, horario_convertido):
+        if not cpf_paciente or not data_convertida or not horario_convertido:
+            return None
+
+        for consulta in self.__consultas:
+            if (consulta.paciente.cpf == cpf_paciente and 
+                consulta.data == data_convertida and 
+                consulta.horario == horario_convertido):
+                return consulta
+                
+        return None
+    
+    def __converter_data(self, data_consulta):
+        if isinstance(data_consulta, str):
+            try:
+                data_consulta = datetime.strptime(data_consulta, "%d/%m/%Y").date()
+            except ValueError:
+                raise ValueError("Data inválida. Use o formato DD/MM/AAAA.")
+        elif isinstance(data_consulta, datetime):
+            data_consulta = data_consulta.date()
+
+        if data_consulta < date.today():
+            raise ValueError("A data da consulta não pode estar no passado.")
+        
+        return data_consulta
+
+    def __converter_horario(self, horario_str):
+        if not horario_str:
+            raise ValueError("Horário não informado.")
+        
+        try:
+            return datetime.strptime(horario_str, "%H:%M").time()
+        except ValueError:
+            raise ValueError("Formato de horário inválido. Use HH:MM (ex: 14:30).")
+
+    def __verificar_expediente(self, clinica, horario_consulta):
+            try:
+                if isinstance(clinica.horario_abertura, str):
+                    abertura = datetime.strptime(clinica.horario_abertura, "%H:%M").time()
+                else:
+                    abertura = clinica.horario_abertura
+                    
+                if isinstance(clinica.horario_fechamento, str):
+                    fechamento = datetime.strptime(clinica.horario_fechamento, "%H:%M").time()
+                else:
+                    fechamento = clinica.horario_fechamento
+            except ValueError:
+                raise ValueError("O horário de funcionamento da clínica está em um formato inválido no sistema.")
+    
+            if horario_consulta < abertura or horario_consulta > fechamento:
+                raise ValueError(
+                    f"Horário fora do expediente! A {clinica.nome} funciona de "
+                    f"{abertura.strftime('%H:%M')} às {fechamento.strftime('%H:%M')}."
+                )

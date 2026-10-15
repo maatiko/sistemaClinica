@@ -130,7 +130,7 @@ class ControladorPessoa:
         if cpf_profissional is None or cpf_profissional.strip() == "":
             raise ValueError("Profissional não informado.")
         
-        existe = any(c.registro == cpf_profissional for c in self.__profissionais)
+        existe = any(c.cpf == cpf_profissional for c in self.__profissionais)
         
         if not existe:
             raise ValueError("Profissional não encontrado.")

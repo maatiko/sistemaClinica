@@ -14,42 +14,48 @@ class TelaClinica:
                     opcao = input("Insira sua opção: ")
         
                     if opcao =="1":
-                        nome = input("Nome da clínica: ")
-                        cidade = input("Cidade: ")
-                        descricao = input("Descrição: ")
-                        abertura = input("Horário de Abertura (HH:MM): ")
-                        fechamento = input("Horário de Fechamento (HH:MM): ")
-        
-                        adicionar_clinica = self.__controlador.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
-                        print(f"\n[Resultado]: {adicionar_clinica}")
-        
+                        try:
+                            nome = input("Nome da clínica: ").strip()
+                            cidade = input("Cidade: ").strip()
+                            descricao = input("Descrição: ").strip()
+                            abertura = input("Horário de Abertura (HH:MM): ").strip()
+                            fechamento = input("Horário de Fechamento (HH:MM): ").strip()
+            
+                            self.__controlador.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
+                            print(f"Clínica adicionada com sucesso!")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
                     elif opcao == "2":
-                        nome = input("Nome da Clínica para ser excluída: ")
-                        excluir_clinica = self.__controlador.excluir_clinica(nome)
-                        print(f"Resultado: {excluir_clinica}")
-        
+                        try:
+                            nome = input("Nome da Clínica para ser excluída: ")
+                            self.__controlador.excluir_clinica(nome)
+                            print(f"Clínica Excluída com sucesso")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
                     elif opcao == "3":
                         nome_atual = input("Nome da Clínica para ser alterada: ").strip()
-                        if self.__controlador.verificar_existencia(nome):
-                            print("Cliníca Encontrada! Digite os novos dados:")
-                            novo_nome = input("Digite o novo nome: ")
-                            nova_localizacao = input("Digite a nova localização/cidade: ")
-                            nova_descricao = input("Digite a nova descrição: ")
-                            novo_horario_abertura = input("Digite o novo horário de abertura: ")
-                            novo_horario_fechamento = input("Digite o novo horário de fechamento: ")
+                        try:
+                            print("Cliníca Encontrada! Digite os novos dados:").strip()
+                            novo_nome = input("Digite o novo nome: ").strip()
+                            nova_localizacao = input("Digite a nova localização/cidade: ").strip()
+                            nova_descricao = input("Digite a nova descrição: ").strip()
+                            novo_horario_abertura = input("Digite o novo horário de abertura: ").strip()
+                            novo_horario_fechamento = input("Digite o novo horário de fechamento: ").strip()
                             self.__controlador.alterar_dados_clinica(nome_atual,novo_nome,nova_localizacao,nova_descricao,novo_horario_abertura,novo_horario_fechamento)
-                            print("Dados Alterados com Sucesso!")
-                        else:
-                            #erro que não existe a clínica que está se procurando
-                            pass
+                            print("Dados de Clínica Alterados com Sucesso!")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
+
                     elif opcao == "4":
-                        clinicas = self.__controlador.listar_clinicas()
-                        if not clinicas:
-                            print("Não há clinicas cadastradas")
-                        else:
-                            for indice,clinica in enumerate(clinicas):
-                                print(f"{indice + 1} {clinica}")
-        
+                        try:
+                            clinicas = self.__controlador.listar_clinicas()
+                            if not clinicas:
+                                print("Não há clinicas cadastradas")
+                            else:
+                                for indice,clinica in enumerate(clinicas):
+                                    print(f"{indice + 1} {clinica}")
+                        except ValueError as e:
+                            print(f"ERRO : {e}")        
                     elif opcao =="0":
                         print("Retornando ao menu principal...")
                         break

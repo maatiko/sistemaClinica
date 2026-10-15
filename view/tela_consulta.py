@@ -16,52 +16,63 @@ class TelaConsulta:
             opcao = input("Insira sua opção: ")
 
             if opcao =="1":
-                nome_clinica = input("Nome da clínica: ")
-                cpf_pac = input("CPF do Paciente: ")
-                registro_prof = input("Registro do Profissional: ")
-                tipo_consulta = input("Tipo de Consulta: ")
+                try:
+                    nome_clinica = input("Nome da clínica: ").strip()
+                    cpf_pac = input("CPF do Paciente: ").strip()
+                    registro_prof = input("Registro do Profissional: ").strip()
+                    tipo_consulta = input("Tipo de Consulta: ").strip()
 
-                valor = input("Valor da Consulta R$: ")
-                if not valor.replace(".","",1).isdigit():
-                    raise ValueError("Deve ser númerico apenas")
-                
-                data_cons = input("Data da Consulta (DD/MM/AAAA): ")
-                horario_cons = input("Horário da Consulta (HH:MM): ")
+                    valor = input("Valor da Consulta R$: ")
+                    if not valor.replace(".","",1).isdigit():
+                        raise ValueError("O valor da consulta deve ser númerico apenas")
+                    
+                    data_cons = input("Data da Consulta (DD/MM/AAAA): ")
+                    horario_cons = input("Horário da Consulta (HH:MM): ")
 
-                self.__controlador.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, valor, data_cons,horario_cons)
-                print(f"\n[Resultado]: ")
+                    self.__controlador.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, valor, data_cons,horario_cons)
+                    print(f"\nAgendado a Consulta ")
+                except ValueError as e:
+                            print(f"ERRO : {e}")
 
             elif opcao == "2":
-
-                cpf_pac = input("CPF do paciente para a consulta ser excluída: ")
-                data_consulta = input("Data da consulta a ser cancelada (DD/MM/AAAA): ")
-                horario_consulta = input("Horário da consulta a ser cancelada (HH:MM): ")
-                
-                excluir_consulta = self.__controlador.excluir_consulta(cpf_pac,data_consulta,horario_consulta)
-                print(f"Resultado: {excluir_consulta}")
+                try:
+                    cpf_pac = input("CPF do paciente para a consulta ser excluída: ").strip()
+                    data_consulta = input("Data da consulta a ser cancelada (DD/MM/AAAA): ").strip()
+                    horario_consulta = input("Horário da consulta a ser cancelada (HH:MM): ").strip()
+                    
+                    excluir_consulta = self.__controlador.excluir_consulta(cpf_pac,data_consulta,horario_consulta)
+                    print(f"Removida a Consulta")
+                except ValueError as e:
+                    print(f"Erro: {e}")
 
             elif opcao == "3":
-                    
-                    print("Primeiro, identifique a consulta atual:")
-                    cpf_paciente = input("CPF do Paciente: ")
-                    data_atual = input("Data atual da consulta (DD/MM/AAAA): ")
-                    horario_atual = input("Horário atual da consulta (HH:MM): ")
+                    try:
+                        print("Primeiro, identifique a consulta atual:")
+                        cpf_paciente = input("CPF do Paciente: ").strip()
+                        data_atual = input("Data atual da consulta (DD/MM/AAAA): ").strip()
+                        horario_atual = input("Horário atual da consulta (HH:MM): ").strip()
 
-                    if self.__controlador.verificar_existencia_consulta(cpf_paciente, data_atual, horario_atual ):
+                        self.__controlador.verificar_existencia_consulta(cpf_paciente, data_atual, horario_atual)
                         print("Consulta achada, vamos reagendá-lá: ")
-                        nova_data = input("Nova Data (DD/MM/AAAA): ")
-                        novo_horario = input("Novo Horário (HH:MM): ")
+                        nova_data = input("Nova Data (DD/MM/AAAA): ").strip()
+                        novo_horario = input("Novo Horário (HH:MM): ").strip()
                         self.__controlador.alterar_consulta(cpf_paciente, data_atual, horario_atual, nova_data, novo_horario)
                         print("Reagendamento feito com sucesso")
+                    except ValueError as e:
+                            print(f"ERRO : {e}")
 
             elif opcao == "4":
-                consultas = self.__controlador.listar_consultas()
-                if not consultas:
-                    print("Não há consultas cadastrados")
-                else:
-                    print("\n--Lista Consultas--")
-                    for indice,consulta in enumerate(consultas):
-                        print(f"{indice + 1} {consulta}")
+                try:
+                    consultas = self.__controlador.listar_consultas()
+                    if not consultas:
+                        print("Não há consultas cadastrados")
+                    else:
+                        print("\n--Lista Consultas--")
+                        for indice,consulta in enumerate(consultas):
+                            print(f"{indice + 1} {consulta}")
+                except ValueError as e:
+                    print(f"Erro {e}")
+                    
             elif opcao =="5":
                 self.menu_procedimentos()
 
@@ -95,11 +106,11 @@ class TelaConsulta:
 
             if opcao == "1":
                 try:
-                    desc = input("Descrição (Ex: Raio-X): ")
-                    custo = input("Custo R$: ")
+                    desc = input("Descrição (Ex: Raio-X): ").strip()
+                    custo = input("Custo R$: ").strip()
                     if not custo.replace(".", "", 1).isdigit():
                         raise ValueError("O custo deve ser numérico.")
-                    registro = input("Registro do Médico responsável: ")
+                    registro = input("Registro do Médico responsável: ").strip()
                     
                     self.__controlador.adicionar_procedimento_na_consulta(cpf_pac, data_cons, horario_cons, desc, float(custo), registro)
                     print(" Procedimento adicionado!")
@@ -116,18 +127,18 @@ class TelaConsulta:
 
             elif opcao == "3":
                 try:
-                    desc_atual = input("Descrição atual do procedimento: ")
+                    desc_atual = input("Descrição atual do procedimento: ").strip()
                     print("\nInsira os novos dados:")
-                    nova_desc = input("Nova Descrição: ")
+                    nova_desc = input("Nova Descrição: ").strip()
                     
                     novo_custo_str = input("Novo Custo R$: ")
                     if not novo_custo_str.replace(".", "", 1).isdigit():
                         raise ValueError("O custo deve ser numérico.")
                         
-                    novo_registro = input("Registro do Médico responsável: ")
+                    novo_registro = input("Registro do Médico responsável: ").strip()
                     
                     self.__controlador.alterar_procedimento_da_consulta(cpf_pac, data_cons, horario_cons, desc_atual,nova_desc, float(novo_custo_str), novo_registro)
-                    print("✨ Procedimento alterado!")
+                    print(" Procedimento alterado!")
                 except ValueError as e:
                     print(f"Erro: {e}")
 
