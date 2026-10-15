@@ -128,3 +128,23 @@ class SaldoDevedorInexistente(ErroPagamento):
 
 class DataPagamentoInvalida(PagamentoInvalido):
     pass
+
+
+class ClinicaException(Exception):
+    """Exceção base para erros relacionados a clínicas."""
+    pass
+
+
+class ClinicaDuplicadaException(ClinicaException):
+    """Já existe uma clínica com esse nome."""
+    pass
+
+
+class ClinicaNaoInformadaException(ClinicaException):
+    """Um campo obrigatório da clínica não foi informado."""
+    pass
+
+
+class ClinicaNaoEncontradaException(ClinicaException):
+    """A clínica solicitada não foi encontrada."""
+    pass
