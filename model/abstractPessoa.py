@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from exception.excecoes import DadosInvalidos, CampoObrigatorio
 
 
 class Pessoa(ABC):
@@ -14,12 +15,16 @@ class Pessoa(ABC):
 
     @nome.setter
     def nome(self, novo_nome):
+        if not isinstance(novo_nome, str) or not novo_nome.strip():
+            raise CampoObrigatorio("O nome é obrigatório.")
+
         if (
-            not isinstance(novo_nome, str)
-            or len(novo_nome.strip()) < 2
+            len(novo_nome.strip()) < 2
             or not any(letra.isalpha() for letra in novo_nome)
         ):
-            raise ValueError("Nome inválido. Digite um nome com letras.")
+            raise DadosInvalidos(
+                "Nome inválido. Digite um nome com letras."
+            )
 
         self.__nome = novo_nome.strip()
 
@@ -29,12 +34,13 @@ class Pessoa(ABC):
 
     @cpf.setter
     def cpf(self, novo_cpf):
-        if (
-            not isinstance(novo_cpf, str)
-            or not novo_cpf.isdigit()
-            or len(novo_cpf) != 11
-        ):
-            raise ValueError("CPF inválido. Digite os 11 números do CPF.")
+        if not isinstance(novo_cpf, str) or not novo_cpf.strip():
+            raise CampoObrigatorio("O CPF é obrigatório.")
+
+        if not novo_cpf.isdigit() or len(novo_cpf) != 11:
+            raise DadosInvalidos(
+                "CPF inválido. Digite os 11 números do CPF."
+            )
 
         self.__cpf = novo_cpf.strip()
 
@@ -46,11 +52,17 @@ class Pessoa(ABC):
     def telefone(self, novo_telefone):
         if (
             not isinstance(novo_telefone, str)
-            or not novo_telefone.isdigit()
+            or not novo_telefone.strip()
+        ):
+            raise CampoObrigatorio("O telefone é obrigatório.")
+
+        if (
+            not novo_telefone.isdigit()
             or len(novo_telefone) not in (10, 11)
         ):
-            raise ValueError(
-                "Telefone inválido. Digite o DDD e o número, apenas com números."
+            raise DadosInvalidos(
+                "Telefone inválido. Digite o DDD e o número, "
+                "apenas com números."
             )
 
         self.__telefone = novo_telefone.strip()
