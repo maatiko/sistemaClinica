@@ -33,7 +33,15 @@ class ControladorConsulta:
         
         self.__verificar_expediente(clinica, horario_conv)
 
-        nova_consulta = Consulta(clinica, paciente, profissional,tipo, data_conv, horario_conv, valor )
+        nova_consulta = Consulta(
+            clinica,
+            paciente,
+            profissional,
+            tipo,
+            data_conv.strftime("%d/%m/%Y"),
+            horario_conv.strftime("%H:%M"),
+            valor,
+        )
         self.__verificar_colisao(nova_consulta)
 
         self.__consultas.append(nova_consulta)

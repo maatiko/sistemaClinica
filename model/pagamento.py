@@ -1,16 +1,12 @@
-<<<<<<< Updated upstream
-from datetime import date
 
-=======
-from datetime import date,datetime
-from abc import ABC,abstractmethod
->>>>>>> Stashed changes
+from datetime import date, datetime
+from abc import ABC, abstractmethod
+
 from exception.excecoes import (
     DataPagamentoInvalida,
     ValorInvalido,
     CampoObrigatorio,
 )
-
 
 class Pagamento:
     def __init__(

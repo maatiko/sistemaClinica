@@ -11,7 +11,7 @@ class ControladorSistema():
         self.__controlador_pessoa = ControladorPessoa()
         self.__controlador_clinica = ControladorClinica()
         self.__controlador_consulta = ControladorConsulta(self)
-        self.__controlador_pagamento = ControladorPagamento()
+        self.__controlador_pagamento = ControladorPagamento(self)
         self.__controlador_relatorio = ControladorRelatorio(self)
         self.__tela_sistema = TelaSistema(self)
    

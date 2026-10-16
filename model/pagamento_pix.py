@@ -1,11 +1,4 @@
-<<<<<<< Updated upstream
 from .pagamento import Pagamento
-from exception.excecoes import DadosPixInvalidos
-
-=======
-from model.pagamento import Pagamento
-from exception.excecoes import DadosPixInvalidos
->>>>>>> Stashed changes
 
 class PagamentoPix(Pagamento):
     def __init__(
@@ -25,5 +18,5 @@ class PagamentoPix(Pagamento):
     def cpf_pagador(self):
         return self.__cpf_pagador
     
-    def descricao_detalhada(self) :
-        return f"PIX | Chave: {self.__cpf_pix}"
+    def descricao_detalhada(self):
+        return f"PIX | Chave: {self.__cpf_pagador}"

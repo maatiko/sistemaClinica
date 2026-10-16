@@ -1,9 +1,4 @@
-<<<<<<< Updated upstream
 from .pagamento import Pagamento
-=======
-from model.pagamento import Pagamento
->>>>>>> Stashed changes
-from exception.excecoes import DadosCartaoInvalidos
 
 
 class PagamentoCartao(Pagamento):
@@ -14,7 +9,8 @@ class PagamentoCartao(Pagamento):
         numero_cartao,
         bandeira,
         parcelas:int = 1,
-        data_pagamento = None
+        data_pagamento = None,
+        modalidade: str = "credito",
         
     ):
         super().__init__(
@@ -25,6 +21,7 @@ class PagamentoCartao(Pagamento):
         self.__numero_cartao = str(numero_cartao)
         self.__bandeira = str(bandeira)
         self.__parcelas = parcelas
+        self.__modalidade = str(modalidade)
     
     @property
     def numero_cartao(self):
@@ -37,13 +34,10 @@ class PagamentoCartao(Pagamento):
     @property
     def parcelas(self):
         return self.__parcelas
+
     @property
     def modalidade(self):
         return self.__modalidade
-
-    @property
-    def parcelas(self):
-        return self.__parcelas
 
     def descricao_detalhada(self) -> str:
         desc = f"Cartão de {self.__modalidade.capitalize()}"

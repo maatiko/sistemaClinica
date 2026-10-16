@@ -54,7 +54,7 @@ class TelaRelatorio:
             data_f = c_barata.data.strftime("%d/%m/%Y")
             print(f" Consulta Mais Barata: R${val_barata:.2f} | Paciente: {c_barata.paciente.nome} | Data: {data_f}")
 
-def exibir_relatorio_procedimentos(self):
+    def exibir_relatorio_procedimentos(self):
         dados = self.__controlador.gerar_relatorio_procedimento()
 
         p_popular = dados.get("procedimento_mais_popular")

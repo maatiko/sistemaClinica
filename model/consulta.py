@@ -27,14 +27,6 @@ class Consulta:
         return self.__profissional
 
     @property
-    def data(self):
-        return self.__data
-
-    @property
-    def horario(self):
-        return self.__horario
-
-    @property
     def procedimentos(self):
         return self.__procedimentos
     
@@ -57,16 +49,12 @@ class Consulta:
             self.__horario = novo_horario
 
     @property
-    def procedimentos(self):
-        return self.__procedimentos
-    
-    @property
     def valor_base(self):
         return self.__valor_base
     
     @valor_base.setter
     def valor_base(self, novo_valor):
-        if isinstance(novo_valor,str) and novo_valor > 0:
+        if isinstance(novo_valor, (int, float)) and novo_valor > 0:
             self.__valor_base = novo_valor
 
     @property

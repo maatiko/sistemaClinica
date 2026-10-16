@@ -1,8 +1,10 @@
+from typing import Optional
+
 from model.pagamento import Pagamento
 
 
 class PagamentoDinheiro(Pagamento):
-    def __init__(self, consulta, valor_pago: float, quantia_recebida: float = None, data_pagamento=None):
+    def __init__(self, consulta, valor_pago: float, quantia_recebida: Optional[float] = None, data_pagamento=None):
         val_pago = float(valor_pago) if valor_pago is not None else 0.0
         super().__init__(consulta=consulta, valor_pago=val_pago, data_pagamento=data_pagamento)
         
