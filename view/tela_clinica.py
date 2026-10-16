@@ -1,5 +1,3 @@
-from exception.excecoes import ErroClinica
-
 class TelaClinica:
     def __init__(self,controlador_clin):
         self.__controlador = controlador_clin
@@ -25,14 +23,14 @@ class TelaClinica:
             
                             self.__controlador.adicionar_clinica(nome, cidade, descricao, abertura, fechamento)
                             print(f"Clínica adicionada com sucesso!")
-                        except (ErroClinica, ValueError) as e:
-                            print(f"ERRO : {e}") 
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
                     elif opcao == "2":
                         try:
                             nome = input("Nome da Clínica para ser excluída: ")
                             self.__controlador.excluir_clinica(nome)
                             print(f"Clínica Excluída com sucesso")
-                        except (ErroClinica, ValueError) as e:
+                        except ValueError as e:
                             print(f"ERRO : {e}")
                     elif opcao == "3":
                         nome_atual = input("Nome da Clínica para ser alterada: ").strip()
@@ -45,8 +43,8 @@ class TelaClinica:
                             novo_horario_fechamento = input("Digite o novo horário de fechamento: ").strip()
                             self.__controlador.alterar_dados_clinica(nome_atual,novo_nome,nova_localizacao,nova_descricao,novo_horario_abertura,novo_horario_fechamento)
                             print("Dados de Clínica Alterados com Sucesso!")
-                        except (ErroClinica, ValueError) as e:
-                            print(f"ERRO : {e}") 
+                        except ValueError as e:
+                            print(f"ERRO : {e}")
 
                     elif opcao == "4":
                         try:
@@ -56,8 +54,8 @@ class TelaClinica:
                             else:
                                 for indice,clinica in enumerate(clinicas):
                                     print(f"{indice + 1} {clinica}")
-                        except (ErroClinica, ValueError) as e:
-                            print(f"ERRO : {e}")       
+                        except ValueError as e:
+                            print(f"ERRO : {e}")        
                     elif opcao =="0":
                         print("Retornando ao menu principal...")
                         break

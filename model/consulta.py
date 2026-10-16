@@ -14,7 +14,6 @@ class Consulta:
         self.__horario = horario
         self.__valor_base = valor
         self.__procedimentos=[]
-        
     @property
     def paciente(self):
         return self.__paciente

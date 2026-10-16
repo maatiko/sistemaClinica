@@ -1,245 +1,160 @@
-from exception.excecoes import ErroClinica
-
 
 class TelaConsulta:
+    def __init__(self,controlador_cons):
+        self.__controlador = controlador_cons
 
-    def __init__(self, controlador_consulta):
-        self.__controlador = controlador_consulta
-
-    def iniciar(self):
+    def menu_consulta(self):
         while True:
-            print("\n===== MENU DE CONSULTAS =====")
-            print("1 - Agendar consulta")
-            print("2 - Alterar consulta")
-            print("3 - Excluir consulta")
-            print("4 - Listar consultas")
-            print("5 - Gerenciar procedimentos")
-            print("0 - Voltar")
+            print("\n--- Menu de Consulta ---")
+            print("Escolha uma opção:")
+            print("1. Agendar Consulta")
+            print("2. Excluir Consulta")
+            print("3. Alterar Consulta")
+            print("4. Listar Consultas")
+            print("5. Gerencimento de Procedimentos")
+            print("0. Retornar ao menu")
+            opcao = input("Insira sua opção: ")
 
-            opcao = input("Escolha uma opção: ").strip()
+            if opcao =="1":
+                try:
+                    nome_clinica = input("Nome da clínica: ").strip()
+                    cpf_pac = input("CPF do Paciente: ").strip()
+                    registro_prof = input("Registro do Profissional: ").strip()
+                    tipo_consulta = input("Tipo de Consulta: ").strip()
 
-            if opcao == "0":
-                return
+                    valor = input("Valor da Consulta R$: ")
+                    if not valor.replace(".","",1).isdigit():
+                        raise ValueError("O valor da consulta deve ser númerico apenas")
+                    
+                    data_cons = input("Data da Consulta (DD/MM/AAAA): ")
+                    horario_cons = input("Horário da Consulta (HH:MM): ")
 
-            try:
-                if opcao == "1":
-                    self.agendar_consulta()
-                elif opcao == "2":
-                    self.alterar_consulta()
-                elif opcao == "3":
-                    self.excluir_consulta()
-                elif opcao == "4":
-                    self.listar_consultas()
-                elif opcao == "5":
-                    self.menu_procedimentos()
-                else:
-                    print("Opção inválida.")
+                    self.__controlador.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, valor, data_cons,horario_cons)
+                    print(f"\nAgendado a Consulta ")
+                except ValueError as e:
+                            print(f"ERRO : {e}")
 
-            except (ErroClinica, ValueError, TypeError, AttributeError) as erro:
-                print(f"\n[Erro] {erro}")
+            elif opcao == "2":
+                try:
+                    cpf_pac = input("CPF do paciente para a consulta ser excluída: ").strip()
+                    data_consulta = input("Data da consulta a ser cancelada (DD/MM/AAAA): ").strip()
+                    horario_consulta = input("Horário da consulta a ser cancelada (HH:MM): ").strip()
+                    
+                    excluir_consulta = self.__controlador.excluir_consulta(cpf_pac,data_consulta,horario_consulta)
+                    print(f"Removida a Consulta")
+                except ValueError as e:
+                    print(f"Erro: {e}")
 
-    def agendar_consulta(self):
-        nome_clinica = input("Nome da clínica: ").strip()
-        cpf = input("CPF do paciente: ").strip()
-        registro = input("Registro do profissional: ").strip()
-        tipo = input("Tipo de consulta: ").strip()
-        valor = input("Valor da consulta: ").strip()
-        data = input("Data (DD/MM/AAAA): ").strip()
-        horario = input("Horário (HH:MM): ").strip()
+            elif opcao == "3":
+                    try:
+                        print("Primeiro, identifique a consulta atual:")
+                        cpf_paciente = input("CPF do Paciente: ").strip()
+                        data_atual = input("Data atual da consulta (DD/MM/AAAA): ").strip()
+                        horario_atual = input("Horário atual da consulta (HH:MM): ").strip()
 
-        if not all([
-            nome_clinica, cpf, registro, tipo, valor, data, horario
-        ]):
-            raise ValueError("Todos os campos são obrigatórios.")
+                        self.__controlador.verificar_existencia_consulta(cpf_paciente, data_atual, horario_atual)
+                        print("Consulta achada, vamos reagendá-lá: ")
+                        nova_data = input("Nova Data (DD/MM/AAAA): ").strip()
+                        novo_horario = input("Novo Horário (HH:MM): ").strip()
+                        self.__controlador.alterar_consulta(cpf_paciente, data_atual, horario_atual, nova_data, novo_horario)
+                        print("Reagendamento feito com sucesso")
+                    except ValueError as e:
+                            print(f"ERRO : {e}")
 
-        valor_convertido = self.converter_valor(valor)
+            elif opcao == "4":
+                try:
+                    consultas = self.__controlador.listar_consultas()
+                    if not consultas:
+                        print("Não há consultas cadastrados")
+                    else:
+                        print("\n--Lista Consultas--")
+                        for indice,consulta in enumerate(consultas):
+                            print(f"{indice + 1} {consulta}")
+                except ValueError as e:
+                    print(f"Erro {e}")
+                    
+            elif opcao =="5":
+                self.menu_procedimentos()
 
-        self.__controlador.agendar_consulta(
-            nome_clinica,
-            cpf,
-            registro,
-            tipo,
-            valor_convertido,
-            data,
-            horario,
-        )
-        print("Consulta agendada com sucesso.")
+            elif opcao =="0":
+                print("Retornando ao menu principal...")
+                break
 
-    def alterar_consulta(self):
-        cpf = input("CPF do paciente da consulta: ").strip()
-        data_atual = input("Data atual (DD/MM/AAAA): ").strip()
-        horario_atual = input("Horário atual (HH:MM): ").strip()
-
-        nome_clinica = input("Novo nome da clínica: ").strip()
-        registro = input("Novo registro do profissional: ").strip()
-        tipo = input("Novo tipo de consulta: ").strip()
-        valor = input("Novo valor da consulta: ").strip()
-        nova_data = input("Nova data (DD/MM/AAAA): ").strip()
-        novo_horario = input("Novo horário (HH:MM): ").strip()
-
-        if not all([
-            cpf, data_atual, horario_atual, nome_clinica,
-            registro, tipo, valor, nova_data, novo_horario
-        ]):
-            raise ValueError("Todos os campos são obrigatórios.")
-
-        valor_convertido = self.converter_valor(valor)
-
-        self.__controlador.alterar_dados_consulta(
-            cpf,
-            data_atual,
-            horario_atual,
-            nome_clinica,
-            registro,
-            tipo,
-            valor_convertido,
-            nova_data,
-            novo_horario,
-        )
-        print("Consulta alterada com sucesso.")
-
-    def excluir_consulta(self):
-        cpf = input("CPF do paciente: ").strip()
-        data = input("Data da consulta (DD/MM/AAAA): ").strip()
-        horario = input("Horário da consulta (HH:MM): ").strip()
-
-        if not all([cpf, data, horario]):
-            raise ValueError("Todos os campos são obrigatórios.")
-
-        self.__controlador.excluir_consulta(cpf, data, horario)
-        print("Consulta excluída com sucesso.")
-
-    def listar_consultas(self):
-        consultas = self.__controlador.listar_consultas()
-
-        if not consultas:
-            print("Nenhuma consulta cadastrada.")
-            return
-
-        print("\n===== CONSULTAS CADASTRADAS =====")
-        for consulta in consultas:
-            print(consulta)
-
+            else:
+                print("Escolha Inválida! Tente Novamente!")
+    
     def menu_procedimentos(self):
-        while True:
-            print("\n===== PROCEDIMENTOS =====")
-            print("1 - Adicionar procedimento")
-            print("2 - Alterar procedimento")
-            print("3 - Excluir procedimento")
-            print("4 - Listar procedimentos")
-            print("0 - Voltar")
-
-            opcao = input("Escolha uma opção: ").strip()
-
-            if opcao == "0":
-                return
-
-            try:
-                if opcao == "1":
-                    self.adicionar_procedimento()
-                elif opcao == "2":
-                    self.alterar_procedimento()
-                elif opcao == "3":
-                    self.excluir_procedimento()
-                elif opcao == "4":
-                    self.listar_procedimentos()
-                else:
-                    print("Opção inválida.")
-
-            except (ErroClinica, ValueError, TypeError, AttributeError) as erro:
-                print(f"\n[Erro] {erro}")
-
-    def adicionar_procedimento(self):
-        cpf, data, horario = self.dados_identificacao_consulta()
-        descricao = input("Descrição do procedimento: ").strip()
-        custo = input("Custo do procedimento: ").strip()
-        registro = input("Registro do profissional responsável: ").strip()
-
-        if not all([descricao, custo, registro]):
-            raise ValueError("Todos os campos são obrigatórios.")
-
-        custo_convertido = self.converter_valor(custo)
-
-        self.__controlador.adicionar_procedimento_na_consulta(
-            cpf, data, horario, descricao, custo_convertido, registro
-        )
-        print("Procedimento adicionado com sucesso.")
-
-    def alterar_procedimento(self):
-        cpf, data, horario = self.dados_identificacao_consulta()
-        descricao_atual = input("Descrição atual: ").strip()
-        nova_descricao = input("Nova descrição: ").strip()
-        novo_custo = input("Novo custo: ").strip()
-        novo_registro = input("Novo registro profissional: ").strip()
-
-        if not all([
-            descricao_atual, nova_descricao, novo_custo, novo_registro
-        ]):
-            raise ValueError("Todos os campos são obrigatórios.")
-
-        custo_convertido = self.converter_valor(novo_custo)
-
-        self.__controlador.alterar_procedimento_da_consulta(
-            cpf,
-            data,
-            horario,
-            descricao_atual,
-            nova_descricao,
-            custo_convertido,
-            novo_registro,
-        )
-        print("Procedimento alterado com sucesso.")
-
-    def excluir_procedimento(self):
-        cpf, data, horario = self.dados_identificacao_consulta()
-        descricao = input("Descrição do procedimento a excluir: ").strip()
-
-        if not descricao:
-            raise ValueError("A descrição do procedimento é obrigatória.")
-
-        self.__controlador.excluir_procedimento_da_consulta(
-            cpf, data, horario, descricao
-        )
-        print("Procedimento excluído com sucesso.")
-
-    def listar_procedimentos(self):
-        cpf, data, horario = self.dados_identificacao_consulta()
-
-        procedimentos = self.__controlador.listar_procedimentos_da_consulta(
-            cpf, data, horario
-        )
-
-        if not procedimentos:
-            print("Nenhum procedimento associado a essa consulta.")
-            return
-
-        print("\n===== PROCEDIMENTOS DA CONSULTA =====")
-        for procedimento in procedimentos:
-            print(procedimento)
-
-    @staticmethod
-    def dados_identificacao_consulta():
-        cpf = input("CPF do paciente: ").strip()
-        data = input("Data da consulta (DD/MM/AAAA): ").strip()
-        horario = input("Horário da consulta (HH:MM): ").strip()
-
-        if not all([cpf, data, horario]):
-            raise ValueError(
-                "CPF, data e horário são obrigatórios."
-            )
-
-        return cpf, data, horario
-
-    @staticmethod
-    def converter_valor(valor_texto):
-        valor_normalizado = valor_texto.strip().replace(",", ".")
-
+        
+        print("\n[Identifique a consulta para acessar os procedimentos]")
+        cpf_pac = input("CPF do paciente: ")
+        data_cons = input("Data da Consulta (DD/MM/AAAA): ")
+        horario_cons = input("Horário da Consulta (HH:MM): ")
+        
         try:
-            valor = float(valor_normalizado)
-        except (ValueError, TypeError):
-            raise ValueError("Informe um valor numérico válido.")
+            self.__controlador.verificar_existencia_consulta(cpf_pac, data_cons, horario_cons)
+        except ValueError as e:
+            print(f" Erro: {e}")
+            
+        while True:
+            print(f"\n--- PROCEDIMENTOS DA CONSULTA ({data_cons} às {horario_cons}) ---")
+            print("1. Adicionar Procedimento")
+            print("2. Excluir Procedimento")
+            print("3. Alterar Procedimento")
+            print("4. Listar Procedimentos")
+            print("0. Voltar")
+            opcao = input("Insira sua opção: ").strip()
 
-        if valor <= 0:
-            raise ValueError("O valor deve ser maior que zero.")
+            if opcao == "1":
+                try:
+                    desc = input("Descrição (Ex: Raio-X): ").strip()
+                    custo = input("Custo R$: ").strip()
+                    if not custo.replace(".", "", 1).isdigit():
+                        raise ValueError("O custo deve ser numérico.")
+                    registro = input("Registro do Médico responsável: ").strip()
+                    
+                    self.__controlador.adicionar_procedimento_na_consulta(cpf_pac, data_cons, horario_cons, desc, float(custo), registro)
+                    print(" Procedimento adicionado!")
+                except ValueError as e:
+                    print(f" Erro: {e}")
 
-        return valor
+            elif opcao == "2":
+                try:
+                    desc_excluir = input("Descrição do procedimento a excluir: ")
+                    self.__controlador.excluir_procedimento_da_consulta(cpf_pac, data_cons, horario_cons, desc_excluir)
+                    print(" Procedimento removido!")
+                except ValueError as e:
+                    print(f" Erro: {e}")
+
+            elif opcao == "3":
+                try:
+                    desc_atual = input("Descrição atual do procedimento: ").strip()
+                    print("\nInsira os novos dados:")
+                    nova_desc = input("Nova Descrição: ").strip()
+                    
+                    novo_custo_str = input("Novo Custo R$: ")
+                    if not novo_custo_str.replace(".", "", 1).isdigit():
+                        raise ValueError("O custo deve ser numérico.")
+                        
+                    novo_registro = input("Registro do Médico responsável: ").strip()
+                    
+                    self.__controlador.alterar_procedimento_da_consulta(cpf_pac, data_cons, horario_cons, desc_atual,nova_desc, float(novo_custo_str), novo_registro)
+                    print(" Procedimento alterado!")
+                except ValueError as e:
+                    print(f"Erro: {e}")
+
+            elif opcao == "4":
+                try:
+                    procedimentos = self.__controlador.listar_procedimentos_da_consulta(cpf_pac, data_cons, horario_cons)
+                    if not procedimentos:
+                        print("Nenhum procedimento registrado nesta consulta.")
+                    else:
+                        print("\n--- LISTA DE PROCEDIMENTOS ---")
+                        for i, p in enumerate(procedimentos):
+                            print(f"[{i+1}] {p}") 
+                except ValueError as e:
+                     print(f" Erro: {e}")
+
+            elif opcao == "0":
+                break
+            else:
+                print("Opção inválida.")
