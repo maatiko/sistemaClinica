@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
-from exception.excecoes import DadosInvalidos, CampoObrigatorio
 
 
 class Pessoa(ABC):
-
     def __init__(self, nome, cpf, telefone):
         self.nome = nome
         self.cpf = cpf
@@ -16,13 +14,12 @@ class Pessoa(ABC):
     @nome.setter
     def nome(self, novo_nome):
         if not isinstance(novo_nome, str) or not novo_nome.strip():
-            raise CampoObrigatorio("O nome é obrigatório.")
+            raise ValueError("O nome é obrigatório.")
 
-        if (
-            len(novo_nome.strip()) < 2
-            or not any(letra.isalpha() for letra in novo_nome)
+        if len(novo_nome.strip()) < 2 or not any(
+            letra.isalpha() for letra in novo_nome
         ):
-            raise DadosInvalidos(
+            raise ValueError(
                 "Nome inválido. Digite um nome com letras."
             )
 
@@ -35,10 +32,10 @@ class Pessoa(ABC):
     @cpf.setter
     def cpf(self, novo_cpf):
         if not isinstance(novo_cpf, str) or not novo_cpf.strip():
-            raise CampoObrigatorio("O CPF é obrigatório.")
+            raise ValueError("O CPF é obrigatório.")
 
         if not novo_cpf.isdigit() or len(novo_cpf) != 11:
-            raise DadosInvalidos(
+            raise ValueError(
                 "CPF inválido. Digite os 11 números do CPF."
             )
 
@@ -54,13 +51,13 @@ class Pessoa(ABC):
             not isinstance(novo_telefone, str)
             or not novo_telefone.strip()
         ):
-            raise CampoObrigatorio("O telefone é obrigatório.")
+            raise ValueError("O telefone é obrigatório.")
 
         if (
             not novo_telefone.isdigit()
             or len(novo_telefone) not in (10, 11)
         ):
-            raise DadosInvalidos(
+            raise ValueError(
                 "Telefone inválido. Digite o DDD e o número, "
                 "apenas com números."
             )

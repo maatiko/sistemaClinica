@@ -1,4 +1,3 @@
-
 class TelaConsulta:
     def __init__(self,controlador_cons):
         self.__controlador = controlador_cons
