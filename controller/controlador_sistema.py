@@ -27,7 +27,7 @@ class ControladorSistema():
         elif opcao == "3":
             self.__controlador_consulta.abrir_tela()
         elif opcao  == "4":
-            pass #menu de pagamento
+            self.__controlador_pagamento.abrir_tela()
         elif opcao =="5":
             self.__controlador_relatorio.abrir_tela()
         else:
