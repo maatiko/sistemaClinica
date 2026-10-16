@@ -156,4 +156,3 @@ class TelaPessoa:
     
                 else:
                     print("Escolha Inválida! Tente Novamente!")  
-    

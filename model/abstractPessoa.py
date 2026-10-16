@@ -14,8 +14,13 @@ class Pessoa(ABC):
 
     @nome.setter
     def nome(self, novo_nome):
-        if not isinstance(novo_nome, str) or len(novo_nome.strip()) < 2:
-            raise ValueError("Nome inválido.")
+        if (
+            not isinstance(novo_nome, str)
+            or len(novo_nome.strip()) < 2
+            or not any(letra.isalpha() for letra in novo_nome)
+        ):
+            raise ValueError("Nome inválido. Digite um nome com letras.")
+
         self.__nome = novo_nome.strip()
 
     @property
@@ -24,8 +29,13 @@ class Pessoa(ABC):
 
     @cpf.setter
     def cpf(self, novo_cpf):
-        if not isinstance(novo_cpf, str) or len(novo_cpf.strip()) < 2:
-            raise ValueError("CPF inválido.")
+        if (
+            not isinstance(novo_cpf, str)
+            or not novo_cpf.isdigit()
+            or len(novo_cpf) != 11
+        ):
+            raise ValueError("CPF inválido. Digite os 11 números do CPF.")
+
         self.__cpf = novo_cpf.strip()
 
     @property
@@ -36,9 +46,13 @@ class Pessoa(ABC):
     def telefone(self, novo_telefone):
         if (
             not isinstance(novo_telefone, str)
-            or len(novo_telefone.strip()) < 2
+            or not novo_telefone.isdigit()
+            or len(novo_telefone) not in (10, 11)
         ):
-            raise ValueError("Telefone inválido.")
+            raise ValueError(
+                "Telefone inválido. Digite o DDD e o número, apenas com números."
+            )
+
         self.__telefone = novo_telefone.strip()
 
     @abstractmethod

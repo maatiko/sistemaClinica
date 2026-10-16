@@ -14,26 +14,38 @@ class ControladorSistema():
         self.__controlador_pagamento = ControladorPagamento(self)
         self.__controlador_relatorio = ControladorRelatorio(self)
         self.__tela_sistema = TelaSistema(self)
-   
 
     def iniciar(self):
-        self.__tela_sistema.iniciar()
+        try:
+            self.__tela_sistema.iniciar()
+        except Exception as erro:
+            print(f"\n[Erro] Não foi possível iniciar o sistema: {erro}")
 
-    def abrir_menu(self,opcao):
-        if opcao == "1":
-            self.__controlador_clinica.abrir_tela()
-        elif opcao == "2":
-            self.__controlador_pessoa.abrir_tela()
-        elif opcao == "3":
-            self.__controlador_consulta.abrir_tela()
-        elif opcao  == "4":
-            self.__controlador_pagamento.abrir_tela()
-        elif opcao =="5":
-            self.__controlador_relatorio.abrir_tela()
-        else:
-            print("\n[Erro] Opção inválida!")
+    def abrir_menu(self, opcao):
+        try:
+            if opcao == "1":
+                self.__controlador_clinica.abrir_tela()
+            elif opcao == "2":
+                self.__controlador_pessoa.abrir_tela()
+            elif opcao == "3":
+                self.__controlador_consulta.abrir_tela()
+            elif opcao == "4":
+                self.__controlador_pagamento.abrir_tela()
+            elif opcao == "5":
+                self.__controlador_relatorio.abrir_tela()
+            else:
+                print("\n[Erro] Opção inválida!")
 
-    #Pontes para o Controlador Consulta
+        except ValueError as erro:
+            print(f"\n[Erro] Valor inválido: {erro}")
+        except TypeError as erro:
+            print(f"\n[Erro] Tipo de dado inválido: {erro}")
+        except AttributeError as erro:
+            print(f"\n[Erro] Problema ao acessar um método ou atributo: {erro}")
+        except Exception as erro:
+            print(f"\n[Erro] Não foi possível abrir o menu: {erro}")
+
+    # Pontes para o Controlador Consulta
     def buscar_clinica(self, nome):
         return self.__controlador_clinica.buscar_clinica_nome(nome)
 
