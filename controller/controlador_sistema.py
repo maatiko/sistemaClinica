@@ -1,18 +1,20 @@
-from controller.controladorClinica import ControladorClinica
-from controller.controladorConsulta import ControladorConsulta
-from controller.controladorPagamento import ControladorPagamento
-from controller.controladorRelatorio import ControladorRelatorio
-from controller.controladorPessoa import ControladorPessoa
-from view.telaSistema import TelaSistema
+from controller.controlador_clinica import ControladorClinica
+from controller.controlador_atendimento import ControladorAntedimento
+from controller.controlador_pagamento import ControladorPagamento
+from controller.controlador_relatorio import ControladorRelatorio
+from controller.controlador_pessoa import ControladorPessoa
+from controller.controlador_tipo_atendimento import ControladorTipoAtendimento
+from view.tela_sistema import TelaSistema
 
 
 class ControladorSistema():
     def __init__(self):
         self.__controlador_pessoa = ControladorPessoa()
         self.__controlador_clinica = ControladorClinica()
-        self.__controlador_consulta = ControladorConsulta(self)
+        self.__controlador_atendimento = ControladorAntedimento(self)
         self.__controlador_pagamento = ControladorPagamento(self)
         self.__controlador_relatorio = ControladorRelatorio(self)
+        self.__controlador_tipo_atendimento = ControladorTipoAtendimento()
         self.__tela_sistema = TelaSistema(self)
 
     def iniciar(self):
@@ -28,11 +30,14 @@ class ControladorSistema():
             elif opcao == "2":
                 self.__controlador_pessoa.abrir_tela()
             elif opcao == "3":
-                self.__controlador_consulta.abrir_tela()
+                self.__controlador_tipo_atendimento.abrir_tela()
             elif opcao == "4":
-                self.__controlador_pagamento.abrir_tela()
+                self.__controlador_atendimento.abrir_tela()
             elif opcao == "5":
+                self.__controlador_pagamento.abrir_tela()
+            elif opcao == "6":
                 self.__controlador_relatorio.abrir_tela()
+            
             else:
                 print("\n[Erro] Opção inválida!")
 

@@ -1,11 +1,12 @@
 from .clinica import Clinica
 from .profissional import Profissional
 from .paciente import Paciente
+from .tipo_atendimento import TipoAtendimento
 from datetime import date
 
-class Consulta:
+class Atendimento:
 
-    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,tipo:str, data:str,horario:str,valor:float):
+    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,tipo:TipoAtendimento, data:str,horario:str,valor:float):
         self.__clinica = clinica
         self.__paciente = paciente
         self.__profissional = profissional

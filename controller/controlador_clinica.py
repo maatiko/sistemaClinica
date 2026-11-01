@@ -1,5 +1,6 @@
 from model.clinica import Clinica
 from view.tela_clinica import TelaClinica
+
 class ControladorClinica:
     def __init__(self):
         self.__clinicas = []

@@ -11,9 +11,10 @@ class TelaSistema:
             print("Gostaria de acessar:")
             print("1. Menu das Clínicas")
             print("2. Menu de Paciente/Profissionais ")
-            print("3. Menu de Consultas")
-            print("4. Menu de Pagamento")
-            print("5. Menu de Relatórios")
+            print("3. Menu de Tipos de Atendimento")
+            print("4. Menu de Consultas")
+            print("5. Menu de Pagamento")
+            print("6. Menu de Relatórios")
             print("0. Sair")
             print("="*40)
 
@@ -22,4 +23,6 @@ class TelaSistema:
             if opcao == "0":
                 print("Encerrando o Sistema.")
                 break
+            else:
+                print("Opção não existente, tente novamente!")
             self.__sistema.abrir_menu(opcao)

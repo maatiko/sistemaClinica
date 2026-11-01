@@ -1,4 +1,4 @@
-from model.abstractPessoa import Pessoa
+from model.pessoa import Pessoa
 
 class Profissional(Pessoa):
 

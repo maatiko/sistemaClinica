@@ -1,16 +1,16 @@
 from datetime import date, datetime
-from model.consulta import Consulta
+from model.atendimento import Atendimento
 from model.procedimento import Procedimento
-from view.tela_consulta import TelaConsulta
+from view.tela_atendimento import TelaAtendimento
 
-class ControladorConsulta:
+class ControladorAntedimento:
     def __init__(self,controlador_sistema):
         self.__consultas = []
-        self.__tela_consulta= TelaConsulta(self)
+        self.__tela= TelaAtendimento(self)
         self.__sistema = controlador_sistema
 
     def abrir_tela(self):
-        self.__tela_consulta.menu_consulta()
+        self.__tela.menu_consulta()
 
     def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional,tipo, valor, data_str, horario_str):
         clinica = self.__sistema.buscar_clinica(nome_clinica)
@@ -33,7 +33,7 @@ class ControladorConsulta:
         
         self.__verificar_expediente(clinica, horario_conv)
 
-        nova_consulta = Consulta(
+        nova_consulta = Atendimento(
             clinica,
             paciente,
             profissional,
@@ -130,6 +130,7 @@ class ControladorConsulta:
                 consulta.data == nova_consulta.data and 
                 consulta.horario == nova_consulta.horario):
                 raise ValueError("O paciente já possui consulta agendada para este horário.")
+    
     def excluir_consulta(self, cpf_paciente, data_str, horario_str):
         data_conv = self.__converter_data(data_str)
         horario_conv = self.__converter_horario(horario_str)
@@ -189,6 +190,7 @@ class ControladorConsulta:
                 return True 
                 
         raise ValueError("Consulta não encontrada com esses dados.")
+
     def buscar_consulta(self, cpf, data_str, horario_str):
         data_conv = self.__converter_data(data_str)
         hor_conv = self.__converter_horario(horario_str)

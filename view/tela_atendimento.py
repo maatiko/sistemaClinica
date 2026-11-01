@@ -1,6 +1,6 @@
-class TelaConsulta:
-    def __init__(self,controlador_cons):
-        self.__controlador = controlador_cons
+class TelaAtendimento:
+    def __init__(self,controlador_atend):
+        self.__controlador = controlador_atend
 
     def menu_consulta(self):
         while True:

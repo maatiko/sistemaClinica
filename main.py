@@ -1,5 +1,5 @@
 from controller.controlador_sistema import ControladorSistema
-from controller.seeder import popular_sistema
+from seeder.seeder import popular_sistema
 
 if __name__ == "__main__":
     sistema = ControladorSistema()
