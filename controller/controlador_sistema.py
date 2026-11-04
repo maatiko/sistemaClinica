@@ -60,6 +60,9 @@ class ControladorSistema():
     def buscar_profissional_registro(self, registro):
         return self.__controlador_pessoa.buscar_profissional_registro(registro)
 
+    def buscar_tipo_atendimento(self, nome):
+        return self.__controlador_tipo_atendimento.buscar_tipo_atendimento(nome)
+
     def buscar_consulta(self, cpf, data_str, horario_str):
         return self.__controlador_consulta.buscar_consulta(cpf, data_str, horario_str)
 
@@ -76,8 +79,12 @@ class ControladorSistema():
 
     @property
     def controlador_consulta(self):
-        return self.__controlador_consulta
+        return self.__controlador_atendimento
 
     @property
     def controlador_pagamento(self):
         return self.__controlador_pagamento
+
+    @property
+    def controlador_tipo_atendimento(self):
+        return self.__controlador_tipo_atendimento

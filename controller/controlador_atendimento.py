@@ -12,7 +12,7 @@ class ControladorAntedimento:
     def abrir_tela(self):
         self.__tela.menu_consulta()
 
-    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional,tipo, valor, data_str, horario_str):
+    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional, tipo, data_str, horario_str):
         clinica = self.__sistema.buscar_clinica(nome_clinica)
         if not nome_clinica or not cpf_paciente or not registro_profissional or not tipo or not data_str or not horario_str:
             raise ValueError("Todos os campos do agendamento são obrigatórios.")
@@ -28,6 +28,7 @@ class ControladorAntedimento:
         if not profissional:
             raise ValueError(f"Profissional (Registro: '{registro_profissional}') não encontrado.")
 
+        tipo_atendimento = self.__sistema.buscar_tipo_atendimento(tipo)
         data_conv = self.__converter_data(data_str)
         horario_conv = self.__converter_horario(horario_str)
         
@@ -37,10 +38,9 @@ class ControladorAntedimento:
             clinica,
             paciente,
             profissional,
-            tipo,
+            tipo_atendimento,
             data_conv.strftime("%d/%m/%Y"),
             horario_conv.strftime("%H:%M"),
-            valor,
         )
         self.__verificar_colisao(nova_consulta)
 
@@ -137,7 +137,11 @@ class ControladorAntedimento:
 
         consulta_encontrada = None
         for consulta in self.__consultas:
-            if consulta.paciente.cpf == cpf_paciente and consulta.data == data_conv and consulta.horario == horario_conv:
+            if (
+                consulta.paciente.cpf == cpf_paciente
+                and consulta.data == data_conv.strftime("%d/%m/%Y")
+                and consulta.horario == horario_conv.strftime("%H:%M")
+            ):
                 consulta_encontrada = consulta
                 break
 
@@ -161,7 +165,7 @@ class ControladorAntedimento:
 
         consulta = None
         for c in self.__consultas:
-            if c.paciente.cpf == cpf and c.data == data_conv_atual and c.horario == hor_conv_atual:
+            if c.paciente.cpf == cpf and c.data == data_conv_atual.strftime("%d/%m/%Y") and c.horario == hor_conv_atual.strftime("%H:%M"):
                 consulta = c
                 break
                 
@@ -173,12 +177,12 @@ class ControladorAntedimento:
         for c in self.__consultas:
             if c != consulta: 
                 if (c.profissional == consulta.profissional and 
-                    c.data == nova_data_conv and 
-                    c.horario == novo_hor_conv):
+                    c.data == nova_data_conv.strftime("%d/%m/%Y") and
+                    c.horario == novo_hor_conv.strftime("%H:%M")):
                     raise ValueError("O profissional já possui outra consulta neste novo horário.")
 
-        consulta.data = nova_data_conv
-        consulta.horario = novo_hor_conv
+        consulta.data = nova_data_conv.strftime("%d/%m/%Y")
+        consulta.horario = novo_hor_conv.strftime("%H:%M")
         return True
 
     def verificar_existencia_consulta(self, cpf, data_str, horario_str):
@@ -186,7 +190,11 @@ class ControladorAntedimento:
         horario_conv = self.__converter_horario(horario_str)
 
         for consulta in self.__consultas:
-            if consulta.paciente.cpf == cpf and consulta.data == data_conv and consulta.horario == horario_conv:
+            if (
+                consulta.paciente.cpf == cpf
+                and consulta.data == data_conv.strftime("%d/%m/%Y")
+                and consulta.horario == horario_conv.strftime("%H:%M")
+            ):
                 return True 
                 
         raise ValueError("Consulta não encontrada com esses dados.")
@@ -201,9 +209,9 @@ class ControladorAntedimento:
             return None
 
         for consulta in self.__consultas:
-            if (consulta.paciente.cpf == cpf_paciente and 
-                consulta.data == data_convertida and 
-                consulta.horario == horario_convertido):
+            if (consulta.paciente.cpf == cpf_paciente and
+                consulta.data == data_convertida.strftime("%d/%m/%Y") and
+                consulta.horario == horario_convertido.strftime("%H:%M")):
                 return consulta
                 
         return None

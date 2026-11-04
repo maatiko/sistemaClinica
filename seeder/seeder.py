@@ -2,6 +2,13 @@ from datetime import date
 
 def popular_sistema(controlador_sistema):
     try:
+        controlador_sistema.controlador_tipo_atendimento.adicionar_tipo_atendimento(
+            "Retorno", "Consulta de retorno", 200.0
+        )
+        controlador_sistema.controlador_tipo_atendimento.adicionar_tipo_atendimento(
+            "Primeira Consulta", "Consulta inicial", 180.0
+        )
+
         controlador_sistema.controlador_clinica.adicionar_clinica(
             "Clínica Santa Cruz", "Florianópolis", "Multiespecialidades", "08:00", "18:00"
         )
@@ -24,14 +31,14 @@ def popular_sistema(controlador_sistema):
         )
 
         controlador_sistema.controlador_consulta.agendar_consulta(
-            "Clínica Santa Cruz", "11122233344", "CRM1234", "Retorno", 200.0, "25/11/2026", "10:00"
+            "Clínica Santa Cruz", "11122233344", "CRM1234", "Retorno", "25/11/2026", "10:00"
         )
         controlador_sistema.controlador_consulta.adicionar_procedimento_na_consulta(
             "11122233344", "25/11/2026", "10:00", "Eletrocardiograma", 150.0, "CRM1234"
         )
 
         controlador_sistema.controlador_consulta.agendar_consulta(
-            "Clínica Santos", "77777777700", "CRM5678", "Primeira Consulta", 180.0, "26/11/2026", "14:30"
+            "Clínica Santos", "77777777700", "CRM5678", "Primeira Consulta", "26/11/2026", "14:30"
         )
 
         ctrl_pag = controlador_sistema.controlador_pagamento

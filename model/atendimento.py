@@ -6,14 +6,13 @@ from datetime import date
 
 class Atendimento:
 
-    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,tipo:TipoAtendimento, data:str,horario:str,valor:float):
+    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,tipo:TipoAtendimento, data:str,horario:str):
         self.__clinica = clinica
         self.__paciente = paciente
         self.__profissional = profissional
         self.__tipo = tipo
         self.__data = data
         self.__horario = horario
-        self.__valor_base = valor
         self.__procedimentos=[]
     @property
     def paciente(self):
@@ -26,6 +25,10 @@ class Atendimento:
     @property
     def profissional(self):
         return self.__profissional
+
+    @property
+    def tipo(self):
+        return self.__tipo
 
     @property
     def procedimentos(self):
@@ -51,17 +54,12 @@ class Atendimento:
 
     @property
     def valor_base(self):
-        return self.__valor_base
-    
-    @valor_base.setter
-    def valor_base(self, novo_valor):
-        if isinstance(novo_valor, (int, float)) and novo_valor > 0:
-            self.__valor_base = novo_valor
+        return self.__tipo.valor
 
     @property
     def valor_total(self):
         custo_procedimentos = sum(p.custo for p in self.__procedimentos)
-        return self.__valor_base + custo_procedimentos
+        return self.__tipo.valor + custo_procedimentos
     
     def adicionar_procedimento(self,procedimento_novo):
         if procedimento_novo is None:

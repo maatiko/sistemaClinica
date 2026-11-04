@@ -92,11 +92,10 @@ class ControladorPagamento:
         return novo_pagamento
 
     def __calcular_valor_total_consulta(self, consulta) -> float:
-        if hasattr(consulta, "valor_total") and callable(getattr(consulta, "valor_total")):
-            res = consulta.valor_total()
-            if res is not None:
-                return float(res)
-        valor_base = getattr(consulta, "valor", 0.0) or 0.0
+        valor_total = getattr(consulta, "valor_total", None)
+        if valor_total is not None:
+            return float(valor_total() if callable(valor_total) else valor_total)
+        valor_base = getattr(consulta, "valor_base", getattr(consulta, "valor", 0.0)) or 0.0
 
         custo_procedimentos = 0.0
         if hasattr(consulta, "procedimentos") and consulta.procedimentos:

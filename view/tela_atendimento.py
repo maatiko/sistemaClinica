@@ -21,14 +21,10 @@ class TelaAtendimento:
                     registro_prof = input("Registro do Profissional: ").strip()
                     tipo_consulta = input("Tipo de Consulta: ").strip()
 
-                    valor = input("Valor da Consulta R$: ")
-                    if not valor.replace(".","",1).isdigit():
-                        raise ValueError("O valor da consulta deve ser númerico apenas")
-                    
                     data_cons = input("Data da Consulta (DD/MM/AAAA): ")
                     horario_cons = input("Horário da Consulta (HH:MM): ")
 
-                    self.__controlador.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, valor, data_cons,horario_cons)
+                    self.__controlador.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, data_cons, horario_cons)
                     print(f"\nAgendado a Consulta ")
                 except ValueError as e:
                             print(f"ERRO : {e}")
