@@ -63,11 +63,11 @@ class ControladorSistema():
     def buscar_tipo_atendimento(self, nome):
         return self.__controlador_tipo_atendimento.buscar_tipo_atendimento(nome)
 
-    def buscar_consulta(self, cpf, data_str, horario_str):
-        return self.__controlador_consulta.buscar_consulta(cpf, data_str, horario_str)
+    def buscar_consulta(self, id_atendimento):
+        return self.__controlador_atendimento.buscar_consulta_por_id(id_atendimento)
 
     def obter_todas_consultas(self):
-        return self.__controlador_consulta.listar_consultas()
+        return self.__controlador_atendimento.listar_consultas()
 
     @property
     def controlador_clinica(self):

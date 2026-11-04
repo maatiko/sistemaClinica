@@ -6,15 +6,32 @@ from view.tela_atendimento import TelaAtendimento
 class ControladorAntedimento:
     def __init__(self,controlador_sistema):
         self.__consultas = []
+        self.__proximo_id_atendimento = 1
         self.__tela= TelaAtendimento(self)
         self.__sistema = controlador_sistema
 
     def abrir_tela(self):
         self.__tela.menu_consulta()
 
-    def agendar_consulta(self, nome_clinica, cpf_paciente, registro_profissional, tipo, data_str, horario_str):
+    def agendar_consulta(
+        self,
+        nome_clinica,
+        cpf_paciente,
+        registro_profissional,
+        tipo,
+        data_str,
+        horario_inicio_str,
+        horario_fim_str,):
         clinica = self.__sistema.buscar_clinica(nome_clinica)
-        if not nome_clinica or not cpf_paciente or not registro_profissional or not tipo or not data_str or not horario_str:
+        if (
+            not nome_clinica
+            or not cpf_paciente
+            or not registro_profissional
+            or not tipo
+            or not data_str
+            or not horario_inicio_str
+            or not horario_fim_str
+        ):
             raise ValueError("Todos os campos do agendamento são obrigatórios.")
         
         if not clinica:
@@ -30,9 +47,11 @@ class ControladorAntedimento:
 
         tipo_atendimento = self.__sistema.buscar_tipo_atendimento(tipo)
         data_conv = self.__converter_data(data_str)
-        horario_conv = self.__converter_horario(horario_str)
+        horario_inicio = self.__converter_horario(horario_inicio_str)
+        horario_fim = self.__converter_horario(horario_fim_str)
+        self.__validar_intervalo(horario_inicio, horario_fim)
         
-        self.__verificar_expediente(clinica, horario_conv)
+        self.__verificar_expediente(clinica, horario_inicio, horario_fim)
 
         nova_consulta = Atendimento(
             clinica,
@@ -40,37 +59,29 @@ class ControladorAntedimento:
             profissional,
             tipo_atendimento,
             data_conv.strftime("%d/%m/%Y"),
-            horario_conv.strftime("%H:%M"),
+            horario_inicio.strftime("%H:%M"),
+            horario_fim.strftime("%H:%M"),
+            self.__proximo_id_atendimento,
         )
         self.__verificar_colisao(nova_consulta)
 
         self.__consultas.append(nova_consulta)
-        return True
+        self.__proximo_id_atendimento += 1
+        return nova_consulta.id_atendimento
     
     
-    def adicionar_procedimento_na_consulta(self, cpf, data_str, horario_str, desc, custo, registro_prof):
+    def adicionar_procedimento_na_consulta(self, id_atendimento, desc, custo, registro_prof):
+        consulta = self.buscar_consulta_por_id(id_atendimento)
         prof = self.__sistema.buscar_profissional_registro(registro_prof)
         if not prof:
             raise ValueError("Profissional do procedimento não encontrado.")
-            
-        data_conv = self.__converter_data(data_str)
-        hor_conv = self.__converter_horario(horario_str)
-        
-        consulta = self.__encontrar_consulta(cpf, data_conv, hor_conv)
-        if not consulta:
-            raise ValueError("Consulta não encontrada.")
             
         proc = Procedimento(desc, custo, prof)
         consulta.adicionar_procedimento(proc)
         return True
     
-    def excluir_procedimento_da_consulta(self, cpf_paciente, data_str, horario_str, descricao_procedimento):
-        data_conv = self.__converter_data(data_str)
-        hor_conv = self.__converter_horario(horario_str)
-        
-        consulta = self.__encontrar_consulta(cpf_paciente, data_conv, hor_conv)
-        if not consulta:
-            raise ValueError("Consulta não encontrada.")
+    def excluir_procedimento_da_consulta(self, id_atendimento, descricao_procedimento):
+        consulta = self.buscar_consulta_por_id(id_atendimento)
 
         procedimento_alvo = None
         for procedimento in consulta.procedimentos:
@@ -84,12 +95,15 @@ class ControladorAntedimento:
         consulta.remover_procedimento(procedimento_alvo)
         return True
 
-    def alterar_procedimento_da_consulta(self, cpf, data_str, hor_str, desc_atual, nova_desc, novo_custo, novo_registro_prof):
-        data_conv = self.__converter_data(data_str)
-        hor_conv = self.__converter_horario(hor_str)
-        consulta = self.__encontrar_consulta(cpf, data_conv, hor_conv)
-        if not consulta:
-            raise ValueError("Consulta não encontrada.")
+    def alterar_procedimento_da_consulta(
+        self,
+        id_atendimento,
+        desc_atual,
+        nova_desc,
+        novo_custo,
+        novo_registro_prof,
+    ):
+        consulta = self.buscar_consulta_por_id(id_atendimento)
 
         procedimento_alvo = None
         for procedimento in consulta.procedimentos:
@@ -110,45 +124,31 @@ class ControladorAntedimento:
         procedimento_alvo.custo = novo_custo
         return True
 
-    def listar_procedimentos_da_consulta(self, cpf, data_str, horario_str):
-        data_conv = self.__converter_data(data_str)
-        hor_conv = self.__converter_horario(horario_str)
-        
-        consulta = self.__encontrar_consulta(cpf, data_conv, hor_conv)
-        if not consulta:
-            raise ValueError("Consulta não encontrada.")
-            
+    def listar_procedimentos_da_consulta(self, id_atendimento):
+        consulta = self.buscar_consulta_por_id(id_atendimento)
         return consulta.procedimentos
     
-    def __verificar_colisao(self,nova_consulta):
+    def __verificar_colisao(self, nova_consulta, consulta_ignorada=None):
         for consulta in self.__consultas:
-            if (consulta.profissional == nova_consulta.profissional and 
-                consulta.data == nova_consulta.data and 
-                consulta.horario == nova_consulta.horario):
-                raise ValueError("Conflito de Horário")
-            if (consulta.paciente == nova_consulta.paciente and 
-                consulta.data == nova_consulta.data and 
-                consulta.horario == nova_consulta.horario):
-                raise ValueError("O paciente já possui consulta agendada para este horário.")
+            if consulta is consulta_ignorada or consulta.data != nova_consulta.data:
+                continue
+
+            inicio_existente = self.__converter_horario(consulta.horario)
+            fim_existente = self.__converter_horario(consulta.horario_fim)
+            inicio_novo = self.__converter_horario(nova_consulta.horario)
+            fim_novo = self.__converter_horario(nova_consulta.horario_fim)
+            ha_sobreposicao = inicio_novo < fim_existente and fim_novo > inicio_existente
+
+            if not ha_sobreposicao:
+                continue
+            if consulta.paciente == nova_consulta.paciente:
+                raise ValueError("O paciente já possui um atendimento neste intervalo.")
+            if consulta.profissional == nova_consulta.profissional:
+                raise ValueError("O profissional já possui um atendimento neste intervalo.")
     
-    def excluir_consulta(self, cpf_paciente, data_str, horario_str):
-        data_conv = self.__converter_data(data_str)
-        horario_conv = self.__converter_horario(horario_str)
-
-        consulta_encontrada = None
-        for consulta in self.__consultas:
-            if (
-                consulta.paciente.cpf == cpf_paciente
-                and consulta.data == data_conv.strftime("%d/%m/%Y")
-                and consulta.horario == horario_conv.strftime("%H:%M")
-            ):
-                consulta_encontrada = consulta
-                break
-
-        if not consulta_encontrada:
-            raise ValueError("Nenhuma consulta encontrada com esses dados.")
-
-        self.__consultas.remove(consulta_encontrada)
+    def excluir_consulta(self, id_atendimento):
+        consulta = self.buscar_consulta_por_id(id_atendimento)
+        self.__consultas.remove(consulta)
         return True
 
 
@@ -157,64 +157,51 @@ class ControladorAntedimento:
             return list(self.__consultas)
 
    
-    def alterar_dados_consulta(self, cpf, data_atual, hor_atual, nova_data, novo_horario):
-        data_conv_atual = self.__converter_data(data_atual)
-        hor_conv_atual = self.__converter_horario(hor_atual)
+    def alterar_dados_consulta(self,id_atendimento,nova_data,novo_horario_inicio,novo_horario_fim,):
+        consulta = self.buscar_consulta_por_id(id_atendimento)
         nova_data_conv = self.__converter_data(nova_data)
-        novo_hor_conv = self.__converter_horario(novo_horario)
+        novo_hor_inicio = self.__converter_horario(novo_horario_inicio)
+        novo_hor_fim = self.__converter_horario(novo_horario_fim)
+        self.__validar_intervalo(novo_hor_inicio, novo_hor_fim)
 
-        consulta = None
-        for c in self.__consultas:
-            if c.paciente.cpf == cpf and c.data == data_conv_atual.strftime("%d/%m/%Y") and c.horario == hor_conv_atual.strftime("%H:%M"):
-                consulta = c
-                break
-                
-        if not consulta:
-            raise ValueError("Consulta não encontrada para alteração.")
-
-        self.__verificar_expediente(consulta.clinica, novo_hor_conv)
-
-        for c in self.__consultas:
-            if c != consulta: 
-                if (c.profissional == consulta.profissional and 
-                    c.data == nova_data_conv.strftime("%d/%m/%Y") and
-                    c.horario == novo_hor_conv.strftime("%H:%M")):
-                    raise ValueError("O profissional já possui outra consulta neste novo horário.")
-
+        nova_consulta = Atendimento(
+            consulta.clinica,
+            consulta.paciente,
+            consulta.profissional,
+            consulta.tipo,
+            nova_data_conv.strftime("%d/%m/%Y"),
+            novo_hor_inicio.strftime("%H:%M"),
+            novo_hor_fim.strftime("%H:%M"),
+            consulta.id_atendimento,
+        )
+        self.__verificar_expediente(consulta.clinica, novo_hor_inicio, novo_hor_fim)
+        self.__verificar_colisao(nova_consulta, consulta)
         consulta.data = nova_data_conv.strftime("%d/%m/%Y")
-        consulta.horario = novo_hor_conv.strftime("%H:%M")
+        consulta.horario = novo_hor_inicio.strftime("%H:%M")
+        consulta.horario_fim = novo_hor_fim.strftime("%H:%M")
         return True
 
-    def verificar_existencia_consulta(self, cpf, data_str, horario_str):
-        data_conv = self.__converter_data(data_str)
-        horario_conv = self.__converter_horario(horario_str)
+    def verificar_existencia_consulta(self, id_atendimento):
+        self.buscar_consulta_por_id(id_atendimento)
+        return True
+
+    def buscar_consulta(self, id_atendimento):
+        return self.buscar_consulta_por_id(id_atendimento)
+
+    def buscar_consulta_por_id(self, id_atendimento):
+        try:
+            id_validado = int(id_atendimento)
+        except (TypeError, ValueError):
+            raise ValueError("O ID do atendimento deve ser um número inteiro.")
+
+        if id_validado <= 0 or str(id_atendimento).strip() != str(id_validado):
+            raise ValueError("O ID do atendimento deve ser um número inteiro positivo.")
 
         for consulta in self.__consultas:
-            if (
-                consulta.paciente.cpf == cpf
-                and consulta.data == data_conv.strftime("%d/%m/%Y")
-                and consulta.horario == horario_conv.strftime("%H:%M")
-            ):
-                return True 
-                
-        raise ValueError("Consulta não encontrada com esses dados.")
-
-    def buscar_consulta(self, cpf, data_str, horario_str):
-        data_conv = self.__converter_data(data_str)
-        hor_conv = self.__converter_horario(horario_str)
-        return self.__encontrar_consulta(cpf, data_conv, hor_conv)
-    
-    def __encontrar_consulta(self, cpf_paciente, data_convertida, horario_convertido):
-        if not cpf_paciente or not data_convertida or not horario_convertido:
-            return None
-
-        for consulta in self.__consultas:
-            if (consulta.paciente.cpf == cpf_paciente and
-                consulta.data == data_convertida.strftime("%d/%m/%Y") and
-                consulta.horario == horario_convertido.strftime("%H:%M")):
+            if consulta.id_atendimento == id_validado:
                 return consulta
                 
-        return None
+        raise ValueError(f"Atendimento com ID {id_validado} não encontrado.")
     
     def __converter_data(self, data_consulta):
         if isinstance(data_consulta, str):
@@ -236,22 +223,29 @@ class ControladorAntedimento:
         except ValueError:
             raise ValueError("Formato de horário inválido. Use HH:MM (ex: 14:30).")
 
-    def __verificar_expediente(self, clinica, horario_consulta):
-            try:
-                if isinstance(clinica.horario_abertura, str):
-                    abertura = datetime.strptime(clinica.horario_abertura, "%H:%M").time()
-                else:
-                    abertura = clinica.horario_abertura
-                    
-                if isinstance(clinica.horario_fechamento, str):
-                    fechamento = datetime.strptime(clinica.horario_fechamento, "%H:%M").time()
-                else:
-                    fechamento = clinica.horario_fechamento
-            except ValueError:
-                raise ValueError("O horário de funcionamento da clínica está em um formato inválido no sistema.")
-    
-            if horario_consulta < abertura or horario_consulta > fechamento:
-                raise ValueError(
-                    f"Horário fora do expediente! A {clinica.nome} funciona de "
-                    f"{abertura.strftime('%H:%M')} às {fechamento.strftime('%H:%M')}."
-                )
+    def __validar_intervalo(self, horario_inicio, horario_fim):
+        if horario_fim <= horario_inicio:
+            raise ValueError("O horário de fim deve ser posterior ao horário de início.")
+
+    def __verificar_expediente(self, clinica, horario_inicio, horario_fim):
+        try:
+            if isinstance(clinica.horario_abertura, str):
+                abertura = datetime.strptime(clinica.horario_abertura, "%H:%M").time()
+            else:
+                abertura = clinica.horario_abertura
+
+            if isinstance(clinica.horario_fechamento, str):
+                fechamento = datetime.strptime(clinica.horario_fechamento, "%H:%M").time()
+            else:
+                fechamento = clinica.horario_fechamento
+        except ValueError:
+            raise ValueError("O horário de funcionamento da clínica está em um formato inválido no sistema.")
+
+        if abertura >= fechamento:
+            raise ValueError("O horário de funcionamento da clínica está configurado incorretamente.")
+
+        if horario_inicio < abertura or horario_fim > fechamento:
+            raise ValueError(
+                f"Horário fora do expediente! A {clinica.nome} funciona de "
+                f"{abertura.strftime('%H:%M')} às {fechamento.strftime('%H:%M')}."
+            )

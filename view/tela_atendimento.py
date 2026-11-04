@@ -22,36 +22,47 @@ class TelaAtendimento:
                     tipo_consulta = input("Tipo de Consulta: ").strip()
 
                     data_cons = input("Data da Consulta (DD/MM/AAAA): ")
-                    horario_cons = input("Horário da Consulta (HH:MM): ")
+                    horario_inicio = input("Horário de início (HH:MM): ").strip()
+                    horario_fim = input("Horário de fim (HH:MM): ").strip()
 
-                    self.__controlador.agendar_consulta(nome_clinica, cpf_pac, registro_prof, tipo_consulta, data_cons, horario_cons)
-                    print(f"\nAgendado a Consulta ")
+                    id_atendimento = self.__controlador.agendar_consulta(
+                        nome_clinica,
+                        cpf_pac,
+                        registro_prof,
+                        tipo_consulta,
+                        data_cons,
+                        horario_inicio,
+                        horario_fim,
+                    )
+                    print(f"\nAtendimento agendado com sucesso. ID: {id_atendimento}")
                 except ValueError as e:
                             print(f"ERRO : {e}")
 
             elif opcao == "2":
                 try:
-                    cpf_pac = input("CPF do paciente para a consulta ser excluída: ").strip()
-                    data_consulta = input("Data da consulta a ser cancelada (DD/MM/AAAA): ").strip()
-                    horario_consulta = input("Horário da consulta a ser cancelada (HH:MM): ").strip()
-                    
-                    excluir_consulta = self.__controlador.excluir_consulta(cpf_pac,data_consulta,horario_consulta)
-                    print(f"Removida a Consulta")
+                    id_atendimento = input("ID do atendimento a ser excluído: ").strip()
+                    self.__controlador.excluir_consulta(id_atendimento)
+                    print("Atendimento removido.")
                 except ValueError as e:
                     print(f"Erro: {e}")
 
             elif opcao == "3":
                     try:
                         print("Primeiro, identifique a consulta atual:")
-                        cpf_paciente = input("CPF do Paciente: ").strip()
-                        data_atual = input("Data atual da consulta (DD/MM/AAAA): ").strip()
-                        horario_atual = input("Horário atual da consulta (HH:MM): ").strip()
+                        id_atendimento = input("ID do atendimento: ").strip()
 
-                        self.__controlador.verificar_existencia_consulta(cpf_paciente, data_atual, horario_atual)
-                        print("Consulta achada, vamos reagendá-lá: ")
+                        atendimento = self.__controlador.buscar_consulta_por_id(id_atendimento)
+                        print(f"Atendimento encontrado: {atendimento}")
+                        print("Informe o novo horário: ")
                         nova_data = input("Nova Data (DD/MM/AAAA): ").strip()
-                        novo_horario = input("Novo Horário (HH:MM): ").strip()
-                        self.__controlador.alterar_consulta(cpf_paciente, data_atual, horario_atual, nova_data, novo_horario)
+                        novo_horario_inicio = input("Novo horário de início (HH:MM): ").strip()
+                        novo_horario_fim = input("Novo horário de fim (HH:MM): ").strip()
+                        self.__controlador.alterar_dados_consulta(
+                            id_atendimento,
+                            nova_data,
+                            novo_horario_inicio,
+                            novo_horario_fim,
+                        )
                         print("Reagendamento feito com sucesso")
                     except ValueError as e:
                             print(f"ERRO : {e}")
@@ -63,8 +74,8 @@ class TelaAtendimento:
                         print("Não há consultas cadastrados")
                     else:
                         print("\n--Lista Consultas--")
-                        for indice,consulta in enumerate(consultas):
-                            print(f"{indice + 1} {consulta}")
+                        for consulta in consultas:
+                            print(consulta)
                 except ValueError as e:
                     print(f"Erro {e}")
                     
@@ -81,17 +92,18 @@ class TelaAtendimento:
     def menu_procedimentos(self):
         
         print("\n[Identifique a consulta para acessar os procedimentos]")
-        cpf_pac = input("CPF do paciente: ")
-        data_cons = input("Data da Consulta (DD/MM/AAAA): ")
-        horario_cons = input("Horário da Consulta (HH:MM): ")
+        id_atendimento = input("ID do atendimento: ").strip()
         
         try:
-            self.__controlador.verificar_existencia_consulta(cpf_pac, data_cons, horario_cons)
+            atendimento = self.__controlador.buscar_consulta_por_id(id_atendimento)
         except ValueError as e:
             print(f" Erro: {e}")
+            return
+
+        print(f"Atendimento selecionado: {atendimento}")
             
         while True:
-            print(f"\n--- PROCEDIMENTOS DA CONSULTA ({data_cons} às {horario_cons}) ---")
+            print(f"\n--- PROCEDIMENTOS DO ATENDIMENTO #{atendimento.id_atendimento} ---")
             print("1. Adicionar Procedimento")
             print("2. Excluir Procedimento")
             print("3. Alterar Procedimento")
@@ -107,7 +119,9 @@ class TelaAtendimento:
                         raise ValueError("O custo deve ser numérico.")
                     registro = input("Registro do Médico responsável: ").strip()
                     
-                    self.__controlador.adicionar_procedimento_na_consulta(cpf_pac, data_cons, horario_cons, desc, float(custo), registro)
+                    self.__controlador.adicionar_procedimento_na_consulta(
+                        id_atendimento, desc, float(custo), registro
+                    )
                     print(" Procedimento adicionado!")
                 except ValueError as e:
                     print(f" Erro: {e}")
@@ -115,7 +129,9 @@ class TelaAtendimento:
             elif opcao == "2":
                 try:
                     desc_excluir = input("Descrição do procedimento a excluir: ")
-                    self.__controlador.excluir_procedimento_da_consulta(cpf_pac, data_cons, horario_cons, desc_excluir)
+                    self.__controlador.excluir_procedimento_da_consulta(
+                        id_atendimento, desc_excluir
+                    )
                     print(" Procedimento removido!")
                 except ValueError as e:
                     print(f" Erro: {e}")
@@ -132,14 +148,22 @@ class TelaAtendimento:
                         
                     novo_registro = input("Registro do Médico responsável: ").strip()
                     
-                    self.__controlador.alterar_procedimento_da_consulta(cpf_pac, data_cons, horario_cons, desc_atual,nova_desc, float(novo_custo_str), novo_registro)
+                    self.__controlador.alterar_procedimento_da_consulta(
+                        id_atendimento,
+                        desc_atual,
+                        nova_desc,
+                        float(novo_custo_str),
+                        novo_registro,
+                    )
                     print(" Procedimento alterado!")
                 except ValueError as e:
                     print(f"Erro: {e}")
 
             elif opcao == "4":
                 try:
-                    procedimentos = self.__controlador.listar_procedimentos_da_consulta(cpf_pac, data_cons, horario_cons)
+                    procedimentos = self.__controlador.listar_procedimentos_da_consulta(
+                        id_atendimento
+                    )
                     if not procedimentos:
                         print("Nenhum procedimento registrado nesta consulta.")
                     else:

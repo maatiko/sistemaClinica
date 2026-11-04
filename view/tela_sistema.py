@@ -23,6 +23,4 @@ class TelaSistema:
             if opcao == "0":
                 print("Encerrando o Sistema.")
                 break
-            else:
-                print("Opção não existente, tente novamente!")
             self.__sistema.abrir_menu(opcao)

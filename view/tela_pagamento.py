@@ -27,17 +27,19 @@ class TelaPagamento:
 
     def registrar_pagamento(self):
         print("\n--- REGISTRO DE PAGAMENTO ---")
-        cpf = input("CPF do Paciente: ").strip()
-        data_str = input("Data da Consulta (DD/MM/AAAA): ").strip()
-        horario_str = input("Horário da Consulta (HH:MM): ").strip()
+        id_atendimento = input("ID do atendimento: ").strip()
 
         try:
-            resumo = self.__controlador.obter_resumo_financeiro_consulta(cpf, data_str, horario_str)
+            resumo = self.__controlador.obter_resumo_financeiro_consulta(id_atendimento)
 
             print("\n" + "-"*40)
             print(" DETALHES DO ATENDIMENTO")
+            print(f"• ID: {resumo['id_atendimento']}")
             print(f"• Paciente: {resumo['paciente_nome']} (CPF: {resumo['paciente_cpf']})")
-            print(f"• Data/Horário: {data_str} às {horario_str}")
+            print(
+                f"• Data/Horário: {resumo['consulta'].data} "
+                f"das {resumo['consulta'].horario} às {resumo['consulta'].horario_fim}"
+            )
             print(f"• Valor Total da Consulta: R$ {resumo['valor_total']:.2f}")
             print(f"• Total Já Pago:            R$ {resumo['total_pago']:.2f}")
             print(f"• VALOR RESTANTE:           R$ {resumo['valor_restante']:.2f}")
@@ -74,10 +76,14 @@ class TelaPagamento:
                 dados_extra["cpf_pagador"] = input("CPF do Pagador: ").strip()
 
             pagamento = self.__controlador.processar_pagamento(
-                cpf, data_str, horario_str, valor_a_pagar, tipo, dados_extra, data_pagamento=data_pag
+                id_atendimento,
+                valor_a_pagar,
+                tipo,
+                dados_extra,
+                data_pagamento=data_pag,
             )
             
-            novo_resumo = self.__controlador.obter_resumo_financeiro_consulta(cpf, data_str, horario_str)
+            novo_resumo = self.__controlador.obter_resumo_financeiro_consulta(id_atendimento)
 
             print("\n Pagamento registrado com sucesso!")
             print(f"• Valor Pago: R$ {pagamento.valor_pago:.2f} | Forma: {pagamento.descricao_detalhada()}")
@@ -100,7 +106,10 @@ class TelaPagamento:
         for idx, pag in enumerate(pagamentos, start=1):
             nome_paciente = pag.consulta.paciente.nome if hasattr(pag.consulta, 'paciente') and hasattr(pag.consulta.paciente, 'nome') else pag.consulta.paciente
             data_p = pag.data_pagamento.strftime("%d/%m/%Y %H:%M") if hasattr(pag.data_pagamento, 'strftime') else str(pag.data_pagamento)
-            print(f"{idx}. Paciente: {nome_paciente} | Valor: R$ {pag.valor_pago:.2f} | Data: {data_p}")
+            print(
+                f"{idx}. Atendimento #{pag.consulta.id_atendimento} | "
+                f"Paciente: {nome_paciente} | Valor: R$ {pag.valor_pago:.2f} | Data: {data_p}"
+            )
             print(f"   Forma: {pag.descricao_detalhada()}")
             print("-" * 45)
 
@@ -115,4 +124,8 @@ class TelaPagamento:
 
         for pag in pagamentos:
             data_p = pag.data_pagamento.strftime("%d/%m/%Y %H:%M") if hasattr(pag.data_pagamento, 'strftime') else str(pag.data_pagamento)
-            print(f"• Valor: R$ {pag.valor_pago:.2f} em {data_p} ({pag.descricao_detalhada()})")
+            print(
+                f"• Atendimento #{pag.consulta.id_atendimento} | "
+                f"Valor: R$ {pag.valor_pago:.2f} em {data_p} "
+                f"({pag.descricao_detalhada()})"
+            )

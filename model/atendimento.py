@@ -2,18 +2,23 @@ from .clinica import Clinica
 from .profissional import Profissional
 from .paciente import Paciente
 from .tipo_atendimento import TipoAtendimento
-from datetime import date
-
 class Atendimento:
 
-    def __init__(self, clinica : Clinica,paciente:Paciente,profissional:Profissional,tipo:TipoAtendimento, data:str,horario:str):
+    def __init__(self,clinica: Clinica,paciente: Paciente,profissional: Profissional,tipo: TipoAtendimento,data: str,horario_inicio: str,horario_fim: str,id_atendimento: int):
+        self.__id_atendimento = id_atendimento
         self.__clinica = clinica
         self.__paciente = paciente
         self.__profissional = profissional
         self.__tipo = tipo
         self.__data = data
-        self.__horario = horario
+        self.__horario = horario_inicio
+        self.__horario_fim = horario_fim
         self.__procedimentos=[]
+
+    @property
+    def id_atendimento(self):
+        return self.__id_atendimento
+
     @property
     def paciente(self):
         return self.__paciente
@@ -53,6 +58,15 @@ class Atendimento:
             self.__horario = novo_horario
 
     @property
+    def horario_fim(self):
+        return self.__horario_fim
+
+    @horario_fim.setter
+    def horario_fim(self, novo_horario):
+        if isinstance(novo_horario, str) and len(novo_horario) > 1:
+            self.__horario_fim = novo_horario
+
+    @property
     def valor_base(self):
         return self.__tipo.valor
 
@@ -72,6 +86,8 @@ class Atendimento:
         else:
             raise ValueError("O procedimento informado não está associado a esta consulta.")
     def __str__(self):
-        return (f"Consulta dia {self.data} às {self.horario} | Paciente: {self.paciente.nome} | "
+        return (f"Atendimento #{self.id_atendimento} | "
+                f"dia {self.data} das {self.horario} às {self.horario_fim} | "
+                f"Paciente: {self.paciente.nome} | "
                 f"Valor Total: R$ {self.valor_total:.2f} "
                 f"({len(self.__procedimentos)} procedimentos adicionais)")

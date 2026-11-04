@@ -30,23 +30,33 @@ def popular_sistema(controlador_sistema):
             "Dr. Carlos Lima", "22933344455", "48999993333", "Ortopedia", "CRM5678"
         )
 
-        controlador_sistema.controlador_consulta.agendar_consulta(
-            "Clínica Santa Cruz", "11122233344", "CRM1234", "Retorno", "25/11/2026", "10:00"
+        id_atendimento = controlador_sistema.controlador_consulta.agendar_consulta(
+            "Clínica Santa Cruz",
+            "11122233344",
+            "CRM1234",
+            "Retorno",
+            "25/11/2026",
+            "10:00",
+            "11:00",
         )
         controlador_sistema.controlador_consulta.adicionar_procedimento_na_consulta(
-            "11122233344", "25/11/2026", "10:00", "Eletrocardiograma", 150.0, "CRM1234"
+            id_atendimento, "Eletrocardiograma", 150.0, "CRM1234"
         )
 
         controlador_sistema.controlador_consulta.agendar_consulta(
-            "Clínica Santos", "77777777700", "CRM5678", "Primeira Consulta", "26/11/2026", "14:30"
+            "Clínica Santos",
+            "77777777700",
+            "CRM5678",
+            "Primeira Consulta",
+            "26/11/2026",
+            "14:30",
+            "15:30",
         )
 
         ctrl_pag = controlador_sistema.controlador_pagamento
 
         ctrl_pag.processar_pagamento(
-            cpf="11122233344",
-            data_str="25/11/2026",
-            horario_str="10:00",
+            id_atendimento=id_atendimento,
             valor_a_pagar=150.0,
             tipo="3",
             dados_extra={"cpf_pagador": "11122233344"},

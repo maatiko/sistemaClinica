@@ -14,8 +14,8 @@ class ControladorPagamento:
     def abrir_tela(self):
         self.__tela_pagamento.menu_pagamento()
 
-    def obter_resumo_financeiro_consulta(self, cpf: str, data_str: str, horario_str: str) -> dict:
-        consulta = self.__buscar_consulta(cpf, data_str, horario_str)
+    def obter_resumo_financeiro_consulta(self, id_atendimento: int) -> dict:
+        consulta = self.__sistema.controlador_consulta.buscar_consulta_por_id(id_atendimento)
         valor_total = self.__calcular_valor_total_consulta(consulta) or 0.0
         total_pago = self.calcular_total_pago_por_consulta(consulta) or 0.0
         valor_restante = max(0.0, valor_total - total_pago)
@@ -25,7 +25,8 @@ class ControladorPagamento:
         return {
             "consulta": consulta,
             "paciente_nome": nome_paciente,
-            "paciente_cpf": cpf,
+            "paciente_cpf": consulta.paciente.cpf,
+            "id_atendimento": consulta.id_atendimento,
             "valor_total": valor_total,
             "total_pago": total_pago,
             "valor_restante": valor_restante,
@@ -39,8 +40,8 @@ class ControladorPagamento:
                 total += pag.valor_pago
         return total
        
-    def processar_pagamento(self, cpf: str, data_str: str, horario_str: str, valor_a_pagar: float, tipo: str, dados_extra: dict, data_pagamento=None):
-        resumo = self.obter_resumo_financeiro_consulta(cpf, data_str, horario_str)
+    def processar_pagamento(self, id_atendimento: int, valor_a_pagar: float, tipo: str, dados_extra: dict, data_pagamento=None):
+        resumo = self.obter_resumo_financeiro_consulta(id_atendimento)
         consulta = resumo["consulta"]
         valor_restante = resumo["valor_restante"]
 
@@ -107,27 +108,6 @@ class ControladorPagamento:
         return float(valor_base) + custo_procedimentos
             
     
-    def __buscar_consulta(self, cpf: str, data_str: str, horario_str: str):
-        consultas = self.__sistema.controlador_consulta.listar_consultas()
-        
-        for c in consultas:
-            cpf_c = c.paciente.cpf if hasattr(c, 'paciente') and hasattr(c.paciente, 'cpf') else None
-            
-            if hasattr(c, 'data') and hasattr(c.data, 'strftime'):
-                data_c = c.data.strftime("%d/%m/%Y")
-            else:
-                data_c = str(getattr(c, 'data', ''))
-
-            if hasattr(c, 'horario') and hasattr(c.horario, 'strftime'):
-                horario_c = c.horario.strftime("%H:%M")
-            else:
-                horario_c = str(getattr(c, 'horario', ''))
-
-            if cpf_c == cpf and data_c == data_str and horario_c == horario_str:
-                return c
-
-        raise ValueError(f"Consulta não encontrada para o CPF {cpf} em {data_str} às {horario_str}.")
-
     def buscar_por_cpf(self, cpf: str):
         resultados = []
         for pag in self.__pagamentos:
@@ -135,3 +115,6 @@ class ControladorPagamento:
             if cpf_paciente == cpf:
                 resultados.append(pag)
         return resultados
+
+    def listar_pagamentos(self):
+        return list(self.__pagamentos)

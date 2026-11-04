@@ -33,9 +33,7 @@ class TelaTipoAtendimento:
         descricao = input("Descrição do Tipo Atendimento: ")
         try:
             valor = float(input("O valor desse Tipo Atendimento: "))
-            self.__controlador.adicionar_tipo_atendimento(
-                nome, descricao, valor
-            )
+            self.__controlador.adicionar_tipo_atendimento(nome, descricao, valor)
             print("Tipo Atendimento cadastrado com sucesso!")
         except ValueError as e:
             print(f"Erro ao cadastrar Tipo Atendimento: {e}")

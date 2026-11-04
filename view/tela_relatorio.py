@@ -46,13 +46,24 @@ class TelaRelatorio:
 
         if c_cara:
             val_cara = c_cara.valor_total() if callable(getattr(c_cara, "valor_total", None)) else c_cara.valor_total
-            data_f = c_cara.data.strftime("%d/%m/%Y")
-            print(f" Consulta Mais Cara: R${val_cara:.2f} | Paciente: {c_cara.paciente.nome} | Data: {data_f}")
+            data_f = self.__formatar_data(c_cara.data)
+            print(
+                f" Atendimento #{c_cara.id_atendimento} - Mais Caro: R${val_cara:.2f} | "
+                f"Paciente: {c_cara.paciente.nome} | Data: {data_f} | "
+                f"Horário: {c_cara.horario} às {c_cara.horario_fim}"
+            )
 
         if c_barata:
             val_barata = c_barata.valor_total() if callable(getattr(c_barata, "valor_total", None)) else c_barata.valor_total
-            data_f = c_barata.data.strftime("%d/%m/%Y")
-            print(f" Consulta Mais Barata: R${val_barata:.2f} | Paciente: {c_barata.paciente.nome} | Data: {data_f}")
+            data_f = self.__formatar_data(c_barata.data)
+            print(
+                f" Atendimento #{c_barata.id_atendimento} - Mais Barato: R${val_barata:.2f} | "
+                f"Paciente: {c_barata.paciente.nome} | Data: {data_f} | "
+                f"Horário: {c_barata.horario} às {c_barata.horario_fim}"
+            )
+
+    def __formatar_data(self, data):
+        return data.strftime("%d/%m/%Y") if hasattr(data, "strftime") else str(data)
 
     def exibir_relatorio_procedimentos(self):
         dados = self.__controlador.gerar_relatorio_procedimento()

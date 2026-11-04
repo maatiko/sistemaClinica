@@ -26,5 +26,11 @@ class Procedimento:
     def profissional(self):
         return self.__profissional
 
+    @profissional.setter
+    def profissional(self, novo_profissional):
+        if novo_profissional is None:
+            raise ValueError("Profissional inválido.")
+        self.__profissional = novo_profissional
+
     def __str__(self):
         return f"Procedimento: {self.__descricao} | Custo: R$ {self.__custo:.2f} | Profissional: {self.__profissional.nome}"       
