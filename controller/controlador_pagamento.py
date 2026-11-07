@@ -1,9 +1,9 @@
-from datetime import date, datetime
-from model.pagamento import Pagamento
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from model.pagamento_dinheiro import PagamentoDinheiro
 from model.pagamento_cartao import PagamentoCartao
 from model.pagamento_pix import PagamentoPix
 from view.tela_pagamento import TelaPagamento
+
 
 class ControladorPagamento:
     def __init__(self,controlador_sistema):
@@ -16,50 +16,69 @@ class ControladorPagamento:
 
     def obter_resumo_financeiro_consulta(self, id_atendimento: int) -> dict:
         consulta = self.__sistema.controlador_consulta.buscar_consulta_por_id(id_atendimento)
-        valor_total = self.__calcular_valor_total_consulta(consulta) or 0.0
-        total_pago = self.calcular_total_pago_por_consulta(consulta) or 0.0
-        valor_restante = max(0.0, valor_total - total_pago)
+        valor_total = self.__converter_valor_monetario(
+            self.__calcular_valor_total_consulta(consulta), "valor total"
+        )
+        if valor_total < 0:
+            raise ValueError("O valor total do atendimento não pode ser negativo.")
+        total_pago = self.__converter_valor_monetario(
+            self.calcular_total_pago_por_consulta(consulta), "total pago"
+        )
+        valor_restante = max(Decimal("0.00"), valor_total - total_pago)
 
         nome_paciente = consulta.paciente.nome if hasattr(consulta.paciente, 'nome') else str(consulta.paciente)
 
         return {
             "consulta": consulta,
+            "atendimento": consulta,
             "paciente_nome": nome_paciente,
             "paciente_cpf": consulta.paciente.cpf,
             "id_atendimento": consulta.id_atendimento,
-            "valor_total": valor_total,
-            "total_pago": total_pago,
-            "valor_restante": valor_restante,
-            "quitado": valor_restante == 0.0
+            "valor_total": float(valor_total),
+            "total_pago": float(total_pago),
+            "valor_restante": float(valor_restante),
+            "quitado": valor_restante == 0
         }
     
     def calcular_total_pago_por_consulta(self, consulta) -> float:
-        total = 0.0
+        total = Decimal("0.00")
         for pag in self.__pagamentos:
             if pag.consulta == consulta:
-                total += pag.valor_pago
-        return total
+                total += self.__converter_valor_monetario(
+                    pag.valor_pago, "valor pago"
+                )
+        return float(total)
        
     def processar_pagamento(self, id_atendimento: int, valor_a_pagar: float, tipo: str, dados_extra: dict, data_pagamento=None):
         resumo = self.obter_resumo_financeiro_consulta(id_atendimento)
         consulta = resumo["consulta"]
-        valor_restante = resumo["valor_restante"]
+        valor_restante = self.__converter_valor_monetario(
+            resumo["valor_restante"], "valor restante"
+        )
+        valor_a_pagar = self.__converter_valor_monetario(
+            valor_a_pagar, "valor do pagamento"
+        )
 
         if valor_restante <= 0:
-            raise ValueError("Esta consulta já está completamente quitada!")
+            raise ValueError("Este atendimento já está completamente quitado.")
 
+        if valor_a_pagar <= 0:
+            raise ValueError("O valor do pagamento deve ser maior que zero.")
         if valor_a_pagar > valor_restante:
             raise ValueError(f"O valor informado (R$ {valor_a_pagar:.2f}) é maior que o valor restante (R$ {valor_restante:.2f}).")
 
         if tipo == "1":
-            quantia_entregue = dados_extra.get("quantia_recebida", valor_a_pagar)
+            quantia_entregue = self.__converter_valor_monetario(
+                dados_extra.get("quantia_recebida", valor_a_pagar),
+                "quantia recebida",
+            )
             if quantia_entregue < valor_a_pagar:
                 raise ValueError("A quantia entregue em dinheiro é menor do que o valor do pagamento.")
             
             novo_pagamento = PagamentoDinheiro(
                 consulta=consulta, 
                 valor_pago=valor_a_pagar, 
-                quantia_recebida=quantia_entregue, 
+                quantia_recebida=float(quantia_entregue),
                 data_pagamento=data_pagamento
             )
 
@@ -91,6 +110,18 @@ class ControladorPagamento:
 
         self.__pagamentos.append(novo_pagamento)
         return novo_pagamento
+
+    @staticmethod
+    def __converter_valor_monetario(valor, campo: str) -> Decimal:
+        try:
+            valor_decimal = Decimal(str(valor))
+        except (InvalidOperation, TypeError, ValueError):
+            raise ValueError(f"O {campo} deve ser um valor numérico válido.")
+
+        if not valor_decimal.is_finite():
+            raise ValueError(f"O {campo} deve ser um valor numérico válido.")
+
+        return valor_decimal.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     def __calcular_valor_total_consulta(self, consulta) -> float:
         valor_total = getattr(consulta, "valor_total", None)

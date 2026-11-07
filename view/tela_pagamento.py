@@ -10,6 +10,7 @@ class TelaPagamento:
             print("1 - Registrar Pagamento de Consulta")
             print("2 - Listar Todos os Pagamentos")
             print("3 - Buscar Pagamentos por Paciente (CPF)")
+            print("4 - Consultar saldo de um atendimento")
             print("0 - Retornar ao Menu Principal")
 
             opcao = input("Escolha uma opção: ").strip()
@@ -20,6 +21,8 @@ class TelaPagamento:
                 self.listar_pagamentos()
             elif opcao == "3":
                 self.buscar_por_cpf()
+            elif opcao == "4":
+                self.consultar_saldo()
             elif opcao == "0":
                 break
             else:
@@ -92,8 +95,6 @@ class TelaPagamento:
 
         except ValueError as e:
             print(f" Erro ao registrar pagamento: {e}")
-        except Exception as e:
-            print(f" Erro inesperado: {e}")
 
     def listar_pagamentos(self):
         print("\n--- LISTA DE PAGAMENTOS REGISTRADOS ---")
@@ -129,3 +130,23 @@ class TelaPagamento:
                 f"Valor: R$ {pag.valor_pago:.2f} em {data_p} "
                 f"({pag.descricao_detalhada()})"
             )
+
+    def consultar_saldo(self):
+        id_atendimento = input("ID do atendimento: ").strip()
+        try:
+            resumo = self.__controlador.obter_resumo_financeiro_consulta(
+                id_atendimento
+            )
+        except ValueError as erro:
+            print(f" Erro ao consultar saldo: {erro}")
+            return
+
+        print("\n--- RESUMO FINANCEIRO DO ATENDIMENTO ---")
+        print(f"Atendimento: #{resumo['id_atendimento']}")
+        print(
+            f"Paciente: {resumo['paciente_nome']} "
+            f"(CPF: {resumo['paciente_cpf']})"
+        )
+        print(f"Valor total: R$ {resumo['valor_total']:.2f}")
+        print(f"Total pago: R$ {resumo['total_pago']:.2f}")
+        print(f"Valor restante: R$ {resumo['valor_restante']:.2f}")

@@ -1,9 +1,15 @@
 from datetime import date, datetime
+import math
 
 
 class Pagamento:
     def __init__(self, consulta, valor_pago, data_pagamento):
-        if valor_pago <= 0 and valor_pago is not None:
+        try:
+            valor_pago = float(valor_pago)
+        except (TypeError, ValueError):
+            raise ValueError("O valor pago deve ser um número válido.")
+
+        if not math.isfinite(valor_pago) or valor_pago <= 0:
             raise ValueError("O valor pago deve ser maior que zero.")
 
         self.__consulta = consulta
@@ -23,38 +29,15 @@ class Pagamento:
                         data_pagamento, "%d/%m/%Y"
                     )
                 except ValueError:
-                    self.__data_pagamento = datetime.now()
-        else:
+                    raise ValueError(
+                        "Data de pagamento inválida. Use DD/MM/AAAA ou DD/MM/AAAA HH:MM."
+                    )
+        elif isinstance(data_pagamento, datetime):
             self.__data_pagamento = data_pagamento
-
-    def __validar_data_pagamento(self):
-        if hasattr(self.__consulta, "data"):
-            data_c = self.__consulta.data
-
-            if isinstance(data_c, str):
-                try:
-                    data_c = datetime.strptime(
-                        data_c, "%d/%m/%Y"
-                    ).date()
-                except ValueError:
-                    data_c = None
-
-            elif isinstance(data_c, datetime):
-                data_c = data_c.date()
-
-            data_p = (
-                self.__data_pagamento.date()
-                if isinstance(self.__data_pagamento, datetime)
-                else self.__data_pagamento
-            )
-
-            if data_c and isinstance(data_p, date) and data_p > data_c:
-                raise ValueError(
-                    f"Data de pagamento inválida! O pagamento "
-                    f"({data_p.strftime('%d/%m/%Y')}) não pode ser "
-                    f"realizado após a data do atendimento "
-                    f"({data_c.strftime('%d/%m/%Y')})."
-                )
+        elif isinstance(data_pagamento, date):
+            self.__data_pagamento = datetime.combine(data_pagamento, datetime.min.time())
+        else:
+            raise ValueError("A data do pagamento deve ser uma data válida.")
 
     @property
     def consulta(self):
