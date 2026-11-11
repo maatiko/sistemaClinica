@@ -13,7 +13,10 @@ class PagamentoPix(Pagamento):
             valor_pago,
             data_pagamento
         )
-        self.__cpf_pagador = str(cpf_pagador)
+        cpf_pagador = str(cpf_pagador).strip() if cpf_pagador is not None else ""
+        if not cpf_pagador:
+            raise ValueError("O CPF do pagador deve ser informado.")
+        self.__cpf_pagador = cpf_pagador
     @property
     def cpf_pagador(self):
         return self.__cpf_pagador

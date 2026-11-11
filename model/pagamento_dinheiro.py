@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 from model.pagamento import Pagamento
@@ -9,7 +10,17 @@ class PagamentoDinheiro(Pagamento):
         super().__init__(consulta=consulta, valor_pago=val_pago, data_pagamento=data_pagamento)
         
         quantia = quantia_recebida if quantia_recebida is not None else val_pago
-        self.__quantia_recebida = float(quantia)
+        try:
+            quantia = float(quantia)
+        except (OverflowError, TypeError, ValueError):
+            raise ValueError("A quantia recebida deve ser um valor numérico válido.")
+
+        if not math.isfinite(quantia) or quantia < val_pago:
+            raise ValueError(
+                "A quantia recebida deve ser finita e igual ou superior ao valor pago."
+            )
+
+        self.__quantia_recebida = quantia
         self.__troco = max(0.0, self.__quantia_recebida - val_pago)
     
     @property

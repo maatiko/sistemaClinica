@@ -3,7 +3,14 @@ import math
 
 
 class Pagamento:
-    def __init__(self, consulta, valor_pago, data_pagamento):
+    def __init__(
+        self,
+        consulta,
+        valor_pago,
+        data_pagamento,
+        *,
+        permite_pagamento_apos_atendimento: bool = False,
+    ):
         try:
             valor_pago = float(valor_pago)
         except (TypeError, ValueError):
@@ -38,6 +45,30 @@ class Pagamento:
             self.__data_pagamento = datetime.combine(data_pagamento, datetime.min.time())
         else:
             raise ValueError("A data do pagamento deve ser uma data válida.")
+
+        data_atendimento = getattr(consulta, "data", None)
+        if isinstance(data_atendimento, datetime):
+            data_atendimento = data_atendimento.date()
+        elif isinstance(data_atendimento, date):
+            pass
+        elif isinstance(data_atendimento, str):
+            try:
+                data_atendimento = datetime.strptime(
+                    data_atendimento.strip(), "%d/%m/%Y"
+                ).date()
+            except ValueError:
+                raise ValueError("A data do atendimento deve ser válida.")
+        else:
+            raise ValueError("O atendimento deve possuir uma data válida.")
+
+        if (
+            self.__data_pagamento.date() > data_atendimento
+            and not permite_pagamento_apos_atendimento
+        ):
+            raise ValueError(
+                "A data do pagamento não pode ser posterior à data do atendimento, "
+                "exceto em pagamentos parcelados no crédito."
+            )
 
     @property
     def consulta(self):
